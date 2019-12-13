@@ -2,7 +2,6 @@ package ttps.spring.config;
 
 import java.util.List;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -23,11 +22,10 @@ public class AppConfig implements WebMvcConfigurer {
 	
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		System.out.println("-----addCorsMappings-----");
 		registry.addMapping("/**")
 			.allowedOrigins("http://localhost:4200")
-            .allowedMethods("GET", "POST", "OPTIONS", "PUT", "DELETE")
-  		  	.allowedHeaders("X-Auth-Token", "Content-Type")
+            .allowedMethods("GET", "PUT", "DELETE", "POST", "OPTIONS")
+  		  	.allowedHeaders("X-Auth-Token", "Content-Type", "Authorization")
   		  	.allowCredentials(false)
 			.maxAge(3600);
 	}

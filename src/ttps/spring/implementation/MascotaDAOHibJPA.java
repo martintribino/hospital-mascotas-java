@@ -5,12 +5,9 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import ttps.spring.dao.IMascotaDAO;
-import ttps.spring.model.Duenio;
 import ttps.spring.model.Mascota;
-import ttps.spring.model.Veterinario;
 
 @Repository
 public class MascotaDAOHibJPA extends GenericDAOHibJPA<Mascota>

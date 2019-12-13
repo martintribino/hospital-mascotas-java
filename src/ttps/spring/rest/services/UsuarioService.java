@@ -35,4 +35,9 @@ public class UsuarioService {
         return !listaUsuarios.isEmpty();
     }
 
+	//actualiza un usuario existente
+	public Usuario actualizar(Usuario usuario) {
+        return usuarioRepository.actualizar(usuario);
+    }
+
 }

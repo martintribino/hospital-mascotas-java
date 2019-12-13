@@ -2,6 +2,8 @@ package ttps.spring.rest.controllers;
 
 import java.util.List;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +12,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ttps.spring.exceptions.UnauthorizedException;
+import ttps.spring.exceptions.UserInvalidKeyException;
 import ttps.spring.exceptions.UserNotFoundException;
+import ttps.spring.model.Encrypt;
 import ttps.spring.model.Usuario;
+import ttps.spring.requests.UsuarioReqBody;
 import ttps.spring.responses.UsuarioResponse;
 import ttps.spring.rest.services.UsuarioService;
 import ttps.spring.security.JWToken;
@@ -31,9 +37,9 @@ public class UsuarioController {
 
 	@Autowired
 	private UsuarioService usuarioService;
-	
+
+	//retorna un Usuario por username, mas conocido como login (:
 	@RequestMapping(value=UsuarioController.LOGIN_URL, produces={MediaType.APPLICATION_JSON_VALUE})
-	//retorna un Usuario por username
 	@PostMapping()
 	public @ResponseBody ResponseEntity<UsuarioResponse> login(@Valid @RequestBody Usuario usu) throws UserNotFoundException, UnauthorizedException {
 		List<Usuario> listaUsuarios = usuarioService.recuperarUsuario(usu.getNombreUsuario());
@@ -44,8 +50,6 @@ public class UsuarioController {
         if (usuario.verificarClave(usu.getClave())) {
         	String token = JWToken.generar(usuario.getNombreUsuario());
 			HttpHeaders headers = new HttpHeaders();
-			//headers.add(UsuarioController.TOKEN_NAME, token);
-			//headers.add(UsuarioController.EXPOSE_HEADERS, UsuarioController.TOKEN_NAME);
 			UsuarioResponse resp = new UsuarioResponse();
 			resp.setNombreUsuario(usuario.getNombreUsuario());
 			resp.setRole(usuario.getRole());
@@ -55,6 +59,44 @@ public class UsuarioController {
         } else {
         	throw new UnauthorizedException("Usuario no autorizado : " + usu.getNombreUsuario());
         }
+	}
+
+	//edita un usuario
+	@RequestMapping(value="/api/usuario/editar", produces={MediaType.APPLICATION_JSON_VALUE})
+	@PutMapping()
+	public @ResponseBody ResponseEntity<UsuarioResponse> editarUsuario(
+			@Valid @RequestBody UsuarioReqBody usu,
+			ServletRequest request
+			) throws UserNotFoundException, UserInvalidKeyException {
+		Usuario usuario = usuarioService.recuperarUsuarioPorNombre(usu.getNombreUsuarioViejo());
+		if(usuario == null) {
+	         throw new UserNotFoundException("Usuario no válido : " + usu.getNombreUsuario());
+	    }
+		if(usuario.getClave().equals(usu.getClave())) {
+	         throw new UserInvalidKeyException("La clave actual debe ser distinta a la anterior.");
+		}
+		if(!usu.getClave().equals(usu.getConfirmarClave())) {
+	         throw new UserInvalidKeyException("Las claves deben coincidir.");
+		}
+		HttpHeaders headers = new HttpHeaders();
+		try
+		{
+			usuario.setNombreUsuario(usu.getNombreUsuario());
+			String pass = Encrypt.encode(usu.getClave());
+			usuario.setClave(pass);
+			this.usuarioService.actualizar(usuario);
+			HttpServletRequest req = (HttpServletRequest) request;
+	        String token = JWToken.getToken(req);
+			UsuarioResponse usuResp = new UsuarioResponse();
+			usuResp.setNombreUsuario(usuario.getNombreUsuario());
+			usuResp.setImagen(usuario.getImagen());
+			usuResp.setRole(usuario.getRole());
+			usuResp.setToken(token);
+    		return new ResponseEntity<UsuarioResponse>(usuResp, headers, HttpStatus.OK);
+		}
+		catch(Exception e) {
+	         throw new UserInvalidKeyException("Las claves deben coincidir.");
+		}
 	}
 
 }

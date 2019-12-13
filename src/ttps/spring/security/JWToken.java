@@ -20,9 +20,9 @@ import io.jsonwebtoken.impl.crypto.MacProvider;
 
 public class JWToken {
 
-    public static final String TOKENKEY = "ttp5.trib.m";
+    public static final String TOKENKEY = "ttp5.tribm.head1878**";
     public final static String AUTHORIZATION_HEADER = "Authorization";
-    public final static String AUTHORIZATION_PREFIX = "BEARER ";
+    public final static String AUTHORIZATION_PREFIX = "Bearer ";
 	private static final int EXPIRATION_LIMIT = 15;
 	private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 	final static Key secret = MacProvider.generateKey(signatureAlgorithm);

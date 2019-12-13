@@ -2,7 +2,6 @@ package ttps.spring.rest.controllers;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ public class AdministradorController {
 
 	 //Recupero todas los Administradores
 	@GetMapping
-	public ResponseEntity<List<Administrador>> listar(HttpServletRequest request) {
+	public ResponseEntity<List<Administrador>> listar() {
 		List<Administrador> administradores = adminService.listar();
 		if(administradores.isEmpty()){
 			return new ResponseEntity<List<Administrador>>(HttpStatus.NO_CONTENT);
@@ -45,7 +44,7 @@ public class AdministradorController {
 	
 	//retorna un Administrador por id
 	@GetMapping("/{id}")
-	public ResponseEntity<Administrador> encontrar(@PathVariable("id") long id, HttpServletRequest request) {
+	public ResponseEntity<Administrador> encontrar(@PathVariable("id") long id) {
 		Administrador admin = adminService.encontrar(id);
 		if (admin == null) {
 			return new ResponseEntity<Administrador>(HttpStatus.NOT_FOUND);
@@ -55,7 +54,7 @@ public class AdministradorController {
 	
 	//guarda un Administrador
 	@PostMapping
-	public ResponseEntity<Administrador> guardar(@Valid @RequestBody Administrador admin, HttpServletRequest request) {
+	public ResponseEntity<Administrador> guardar(@Valid @RequestBody Administrador admin) {
 		if (adminService.existe(admin)) {
 			return new ResponseEntity<Administrador>(admin, HttpStatus.CONFLICT);
 		}
@@ -80,7 +79,7 @@ public class AdministradorController {
 	
 	//actualiza un Administrador
 	@PutMapping("/{id}")
-	public ResponseEntity<Administrador> actualizar(@PathVariable("id") long id, HttpServletRequest request,
+	public ResponseEntity<Administrador> actualizar(@PathVariable("id") long id,
 											  @Valid @RequestBody Administrador admin) {
 		Administrador administrador = adminService.encontrar(id);
 		if (administrador == null || administrador.getUsuario() == null) {
@@ -92,16 +91,13 @@ public class AdministradorController {
 		administrador.setDni(admin.getDni());
 		administrador.setTelefono(admin.getTelefono());
 		administrador.setDomicilio(admin.getDomicilio());
-		administrador.getUsuario().setNombreUsuario(admin.getUsuario().getNombreUsuario());
-		String pass = Encrypt.encode(admin.getUsuario().getClave());
-		administrador.getUsuario().setClave(pass);
 		Administrador adminUpdated = (Administrador) adminService.actualizar(administrador);
 		return new ResponseEntity<Administrador>(adminUpdated, HttpStatus.OK);
 	}
 	
 	//borra un Administrador
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Administrador> eliminar(@PathVariable("id") long id, HttpServletRequest request) {
+	public ResponseEntity<Administrador> eliminar(@PathVariable("id") long id) {
 		Administrador admin = adminService.encontrar(id);
 		if (admin == null) {
 			return new ResponseEntity<Administrador>(HttpStatus.NOT_FOUND);

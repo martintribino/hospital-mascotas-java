@@ -20,18 +20,18 @@ public class VeterinarioService {
     }
 
 	//comprueba si existe un Veterinario
-	public Boolean existe(Veterinario mascota) {
-        return veterinarioRepository.existe(mascota);
+	public Boolean existe(Veterinario vet) {
+        return veterinarioRepository.existe(vet);
     }
 
-	//guarda un Veterinario nueva
-	public Veterinario guardar(Veterinario mascota) {
-        return veterinarioRepository.guardar(mascota);
+	//guarda un Veterinario nuevo
+	public Veterinario guardar(Veterinario vet) {
+        return veterinarioRepository.guardar(vet);
     }
 
 	//actualiza un Veterinario existente
-	public Veterinario actualizar(Veterinario mascota) {
-        return veterinarioRepository.actualizar(mascota);
+	public Veterinario actualizar(Veterinario vet) {
+        return veterinarioRepository.actualizar(vet);
     }
 
 	//borra un Veterinario existente por id

@@ -7,15 +7,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ttps.spring.exceptions.UserNotFoundException;
+import ttps.spring.model.Duenio;
 import ttps.spring.model.Mascota;
+import ttps.spring.model.Persona;
+import ttps.spring.model.Usuario;
+import ttps.spring.requests.MascotaReqBody;
+import ttps.spring.rest.services.DuenioService;
 import ttps.spring.rest.services.MascotaService;
+import ttps.spring.rest.services.UsuarioService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +36,14 @@ public class MascotaController {
 
 	@Autowired
 	private MascotaService mascotaService;
+	@Autowired
+	private UsuarioService usuService;
+	@Autowired
+	private DuenioService duenioServ;
 	
 	 //Recupero todas los mascotas
 	@GetMapping(value="/api/mascotas", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<List<Mascota>> listar(HttpServletRequest request) {
+	public ResponseEntity<List<Mascota>> listar() {
 		List<Mascota> mascotas = mascotaService.listar();
 		if(mascotas.isEmpty()){
 			return new ResponseEntity<List<Mascota>>(HttpStatus.NOT_FOUND);
@@ -42,7 +53,7 @@ public class MascotaController {
 
 	 //Recupero todas los mascotas pero solo las propiedades publicas
 	@GetMapping(value="/mascotas", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<List<Mascota>> listarPublicas(HttpServletRequest request) {
+	public ResponseEntity<List<Mascota>> listarPublicas() {
 		List<Mascota> mascotas = mascotaService.listar();
 		if(mascotas.isEmpty()){
 			return new ResponseEntity<List<Mascota>>(mascotas, HttpStatus.OK);
@@ -74,19 +85,27 @@ public class MascotaController {
 		return new ResponseEntity<List<Mascota>>(mascotasReturn, HttpStatus.OK);
 	}
 	
-	//retorna una mascota por dueno
-	@GetMapping(value="/api/mascotas/duenio/{id}", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<List<Mascota>> listarPorDuenio(@PathVariable("id") long id, HttpServletRequest request) {
-		List<Mascota> mascotas = mascotaService.listarPorDuenio(id);
+	//retorna mascotas por dueno
+	@GetMapping(value="/api/mascotas/duenio/", produces={MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<List<Mascota>> listarPorDuenio(@RequestParam("username") String userName) {
+		Usuario usu = usuService.recuperarUsuarioPorNombre(userName);
+		if(usu == null) {
+	         throw new UserNotFoundException("Usuario no válido: " + userName);
+	    }
+		Persona perfil = usu.getPersona();
+		if(perfil == null) {
+	         throw new UserNotFoundException("Perfil no encontrado." );
+	    }
+		List<Mascota> mascotas = mascotaService.listarPorDuenio(perfil.getId());
 		if (mascotas.isEmpty()) {
-			return new ResponseEntity<List<Mascota>>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<List<Mascota>>(HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<List<Mascota>>(mascotas, HttpStatus.OK);
 	}
 	
 	//retorna una mascota por id
 	@GetMapping(value="/api/mascotas/{id}", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<Mascota> encontrar(@PathVariable("id") long id, HttpServletRequest request) {
+	public ResponseEntity<Mascota> encontrar(@PathVariable("id") long id) {
 		Mascota mascota = mascotaService.encontrar(id);
 		if (mascota == null) {
 			return new ResponseEntity<Mascota>(HttpStatus.NOT_FOUND);
@@ -96,12 +115,29 @@ public class MascotaController {
 	
 	//guarda una mascota
 	@PostMapping(value="/api/mascotas", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<Mascota> guardar(@RequestBody Mascota mascota, HttpServletRequest request) {
-		if (mascotaService.existe(mascota)) {
-			return new ResponseEntity<Mascota>(HttpStatus.CONFLICT);
-		}
+	public ResponseEntity<Mascota> guardar(@RequestBody MascotaReqBody mascota) {
+		String userName = mascota.getUsername();
+		Usuario usu = usuService.recuperarUsuarioPorNombre(userName);
+		if(usu == null) {
+	         throw new UserNotFoundException("Usuario no válido: " + userName);
+	    }
+		Persona perfil = usu.getPersona();
+		if(perfil == null) {
+	         throw new UserNotFoundException("Perfil no encontrado." );
+	    }
 		try {
-			Mascota mascotaCreated = (Mascota) mascotaService.guardar(mascota);
+			Mascota masc = new Mascota();
+			Duenio d = duenioServ.encontrar(perfil.getId());
+			masc.setNombre(mascota.getNombre());
+			masc.setEspecie(mascota.getEspecie());
+			masc.setRaza(mascota.getRaza());
+			masc.setSexo(mascota.getSexo());
+			masc.setColor(mascota.getColor());
+			masc.setSenias(mascota.getSenias());
+			masc.setFechaNacimiento(mascota.getFechaNacimiento());
+			masc.setImagen(mascota.getImagen());
+			masc.setDuenio(d);
+			Mascota mascotaCreated = (Mascota) mascotaService.guardar(masc);
 			return new ResponseEntity<Mascota>(mascotaCreated, HttpStatus.CREATED);
 		}
 		catch (Exception e) {
@@ -112,7 +148,7 @@ public class MascotaController {
 	
 	//actualiza una mascota
 	@PutMapping(value="/api/mascotas/{id}", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<Mascota> actualizar(@PathVariable("id") long id, HttpServletRequest request,
+	public ResponseEntity<Mascota> actualizar(@PathVariable("id") long id,
 											  @Valid @RequestBody Mascota mascParam) {
 		Mascota mascota = mascotaService.encontrar(id);
 		if (mascota == null) {
@@ -132,7 +168,7 @@ public class MascotaController {
 	
 	//borra una mascota
 	@DeleteMapping(value="/api/mascotas/{id}", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<Mascota> eliminar(@PathVariable("id") long id, HttpServletRequest request) {
+	public ResponseEntity<Mascota> eliminar(@PathVariable("id") long id) {
 		Mascota mascota = mascotaService.encontrar(id);
 		if (mascota == null) {
 			return new ResponseEntity<Mascota>(HttpStatus.NOT_FOUND);

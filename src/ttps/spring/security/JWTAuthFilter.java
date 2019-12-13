@@ -13,7 +13,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -35,8 +35,11 @@ public class JWTAuthFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
+        if (HttpMethod.OPTIONS.matches(req.getMethod())) {
+            chain.doFilter(request, response);
+            return;
+        }
         String token = JWToken.getToken(req);
-        System.out.println(token);
         if (token == null) {
             res.setStatus(HttpStatus.UNAUTHORIZED.value());
             res.setContentType("application/json");

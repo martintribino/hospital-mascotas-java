@@ -11,7 +11,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 
 @ControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
@@ -40,6 +39,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
     }
 	
+	@ExceptionHandler(UserInvalidKeyException.class)
+    public final ResponseEntity<ErrorResponse> handleUserInvalidKeyException(UserInvalidKeyException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("User invalid key", details);
+        return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
+    }
+	
 	@ExceptionHandler(ExpiredJwtException.class)
     public final ResponseEntity<ErrorResponse> handleExpiredJwtException(ExpiredJwtException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
@@ -53,6 +60,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         ErrorResponse error = new ErrorResponse("Token error", details);
+        return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
+    }
+	
+	@ExceptionHandler(BadRequestException.class)
+    public final ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("Bad Request", details);
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
     }
 

@@ -2,7 +2,6 @@ package ttps.spring.rest.controllers;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ public class DuenioController {
 
 	 //Recupero todas los Dueños
 	@GetMapping
-	public ResponseEntity<List<Duenio>> listar(HttpServletRequest request) {
+	public ResponseEntity<List<Duenio>> listar() {
 		List<Duenio> duenios = duenioService.listar();
 		if(duenios.isEmpty()){
 			return new ResponseEntity<List<Duenio>>(HttpStatus.NO_CONTENT);
@@ -42,7 +41,7 @@ public class DuenioController {
 	
 	//retorna un Duenio por id
 	@GetMapping("/{id}")
-	public ResponseEntity<Duenio> encontrar(@PathVariable("id") long id, HttpServletRequest request) {
+	public ResponseEntity<Duenio> encontrar(@PathVariable("id") long id) {
 		Duenio duenio = duenioService.encontrar(id);
 		if (duenio == null) {
 			return new ResponseEntity<Duenio>(HttpStatus.NOT_FOUND);
@@ -52,7 +51,7 @@ public class DuenioController {
 	
 	//guarda un Duenio
 	@PostMapping
-	public ResponseEntity<Duenio> guardar(@Valid @RequestBody Duenio d, HttpServletRequest request) {
+	public ResponseEntity<Duenio> guardar(@Valid @RequestBody Duenio d) {
 		if (duenioService.existe(d)) {
 			return new ResponseEntity<Duenio>(HttpStatus.CONFLICT); //respuesta 409
 		}
@@ -74,7 +73,7 @@ public class DuenioController {
 	
 	//actualiza un Duenio
 	@PutMapping("/{id}")
-	public ResponseEntity<Duenio> actualizar(@PathVariable("id") long id, HttpServletRequest request,
+	public ResponseEntity<Duenio> actualizar(@PathVariable("id") long id,
 											  @Valid @RequestBody Duenio d) {
 		Duenio duenio = duenioService.encontrar(id);
 		if (duenio == null) {
@@ -97,7 +96,7 @@ public class DuenioController {
 	
 	//borra un Duenio
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Duenio> eliminar(@PathVariable("id") long id, HttpServletRequest request) {
+	public ResponseEntity<Duenio> eliminar(@PathVariable("id") long id) {
 		Duenio duenio = duenioService.encontrar(id);
 		if (duenio == null) {
 			return new ResponseEntity<Duenio>(HttpStatus.NOT_FOUND);
