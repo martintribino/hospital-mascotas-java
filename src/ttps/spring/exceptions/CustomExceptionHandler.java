@@ -68,7 +68,15 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         ErrorResponse error = new ErrorResponse("Bad Request", details);
-        return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
+    }
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+    public final ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("Argument not valid.", details);
+        return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
     }
 
 }

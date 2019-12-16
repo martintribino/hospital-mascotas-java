@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ttps.spring.exceptions.BadRequestException;
 import ttps.spring.exceptions.UserNotFoundException;
 import ttps.spring.model.Administrador;
 import ttps.spring.model.Duenio;
@@ -44,7 +45,8 @@ public class PerfilController {
 	//guarda un Perfil
 	@PostMapping
 	@RequestMapping(value="/usuario/profile", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> guardar(@Valid @RequestBody PersonaReqBody p, HttpServletRequest request) {
+	public ResponseEntity<?> guardar(@Valid @RequestBody PersonaReqBody p)
+			 throws BadRequestException {
 		switch (p.getRole()) {
 			case "administrador":
 				Administrador a = new Administrador(p);
@@ -56,11 +58,7 @@ public class PerfilController {
 				Veterinario v = new Veterinario(p);
 				return vetCont.guardar(v);
 			default:
-				DefaultResponse resp = new DefaultResponse();
-				resp.setStatus(HttpStatus.BAD_REQUEST);
-				resp.setStatusCode(HttpStatus.BAD_REQUEST.value());
-				resp.setStatusText("No role");
-				return new ResponseEntity<DefaultResponse>(resp, HttpStatus.BAD_REQUEST);
+		        throw new BadRequestException("No role." );
 		}
 	}
 	
@@ -93,49 +91,49 @@ public class PerfilController {
 	         throw new UserNotFoundException("Perfil no encontrado." );
 	    }
 		switch (perfil.getRole()) {
-		case "administrador":
-			Administrador a = new Administrador(
-					perfil.getUsuario().getNombreUsuario(),
-					perfReq.getNombre(),
-					perfReq.getApellido(),
-					perfil.getUsuario().getClave(),
-					perfReq.getEmail(),
-					perfReq.getDni(),
-					perfReq.getTelefono(),
-					perfReq.getDomicilio());
-			return adminCont.actualizar(perfil.getId(), a);
-		case "duenio":
-			Duenio d = new Duenio(
-					perfil.getUsuario().getNombreUsuario(),
-					perfReq.getNombre(),
-					perfReq.getApellido(),
-					perfil.getUsuario().getClave(),
-					perfReq.getEmail(),
-					perfReq.getDni(),
-					perfReq.getTelefono(),
-					perfReq.getDomicilio(),
-					new ArrayList<Mascota>());
-			return duenioCont.actualizar(perfil.getId(), d);
-		case "veterinario":
-			Veterinario v = new Veterinario(
-					perfil.getUsuario().getNombreUsuario(),
-					perfReq.getNombre(),
-					perfReq.getApellido(),
-					perfil.getUsuario().getClave(),
-					perfReq.getEmail(),
-					perfReq.getDni(),
-					perfReq.getTelefono(),
-					perfReq.getDomicilio(),
-					perfReq.getNombreClinica(),
-					perfReq.getDomicilioClinica(),
-					perfReq.getValidado());
-			return vetCont.actualizar(perfil.getId(), v);
-		default:
-			DefaultResponse resp = new DefaultResponse();
-			resp.setStatus(HttpStatus.BAD_REQUEST);
-			resp.setStatusCode(HttpStatus.BAD_REQUEST.value());
-			resp.setStatusText("No role");
-			return new ResponseEntity<DefaultResponse>(resp, HttpStatus.BAD_REQUEST);
+			case "administrador":
+				Administrador a = new Administrador(
+						perfil.getUsuario().getNombreUsuario(),
+						perfReq.getNombre(),
+						perfReq.getApellido(),
+						perfil.getUsuario().getClave(),
+						perfReq.getEmail(),
+						perfReq.getDni(),
+						perfReq.getTelefono(),
+						perfReq.getDomicilio());
+				return adminCont.actualizar(perfil.getId(), a);
+			case "duenio":
+				Duenio d = new Duenio(
+						perfil.getUsuario().getNombreUsuario(),
+						perfReq.getNombre(),
+						perfReq.getApellido(),
+						perfil.getUsuario().getClave(),
+						perfReq.getEmail(),
+						perfReq.getDni(),
+						perfReq.getTelefono(),
+						perfReq.getDomicilio(),
+						new ArrayList<Mascota>());
+				return duenioCont.actualizar(perfil.getId(), d);
+			case "veterinario":
+				Veterinario v = new Veterinario(
+						perfil.getUsuario().getNombreUsuario(),
+						perfReq.getNombre(),
+						perfReq.getApellido(),
+						perfil.getUsuario().getClave(),
+						perfReq.getEmail(),
+						perfReq.getDni(),
+						perfReq.getTelefono(),
+						perfReq.getDomicilio(),
+						perfReq.getNombreClinica(),
+						perfReq.getDomicilioClinica(),
+						perfReq.getValidado());
+				return vetCont.actualizar(perfil.getId(), v);
+			default:
+				DefaultResponse resp = new DefaultResponse();
+				resp.setStatus(HttpStatus.BAD_REQUEST);
+				resp.setStatusCode(HttpStatus.BAD_REQUEST.value());
+				resp.setStatusText("No role");
+				return new ResponseEntity<DefaultResponse>(resp, HttpStatus.BAD_REQUEST);
 		}
 	}
 	
