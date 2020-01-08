@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import ttps.spring.config.AppConfig;
 import ttps.spring.responses.DefaultResponse;
 
 /**
@@ -34,15 +35,16 @@ public class JWTAuthFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse res = (HttpServletResponse) response;
         if (HttpMethod.OPTIONS.matches(req.getMethod())) {
             chain.doFilter(request, response);
             return;
         }
+        HttpServletResponse res = (HttpServletResponse) response;
+        res.setContentType("application/json");
+        res.addHeader("Access-Control-Allow-Origin", AppConfig.FRONT_URL);
         String token = JWToken.getToken(req);
         if (token == null) {
             res.setStatus(HttpStatus.UNAUTHORIZED.value());
-            res.setContentType("application/json");
             PrintWriter out = response.getWriter();
             DefaultResponse defResp = new DefaultResponse(
             		HttpStatus.UNAUTHORIZED,
@@ -56,7 +58,6 @@ public class JWTAuthFilter implements Filter {
 			JWToken.validateToken(token);
 		} catch  (ExpiredJwtException exp) {
             res.setStatus(HttpStatus.FORBIDDEN.value());
-            res.setContentType("application/json");
             PrintWriter out = response.getWriter();
             DefaultResponse defResp = new DefaultResponse(
             		HttpStatus.FORBIDDEN,
@@ -67,7 +68,6 @@ public class JWTAuthFilter implements Filter {
             return;
 		} catch (JwtException e) {
             res.setStatus(HttpStatus.FORBIDDEN.value());
-            res.setContentType("application/json");
             PrintWriter out = response.getWriter();
             DefaultResponse defResp = new DefaultResponse(
             		HttpStatus.FORBIDDEN,
@@ -77,7 +77,7 @@ public class JWTAuthFilter implements Filter {
 			out.print(defResp.toJSON());
             return;
 		}
-        chain.doFilter(request, response);
+        chain.doFilter(request, res);
 	}
 
 	@Override

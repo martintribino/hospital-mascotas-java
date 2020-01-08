@@ -24,14 +24,14 @@ public class AdministradorService {
         return adminRepository.existe(admin);
     }
 
-	//guarda un Administrador nueva
-	public Administrador guardar(Administrador mascota) {
-        return adminRepository.guardar(mascota);
+	//guarda un Administrador nuevo
+	public Administrador guardar(Administrador admin) {
+        return adminRepository.guardar(admin);
     }
 
 	//actualiza un Administrador existente
-	public Administrador actualizar(Administrador mascota) {
-        return adminRepository.actualizar(mascota);
+	public Administrador actualizar(Administrador admin) {
+        return adminRepository.actualizar(admin);
     }
 
 	//borra un Administrador existente por id

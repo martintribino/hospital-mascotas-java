@@ -8,13 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ttps.spring.model.Encrypt;
@@ -38,19 +35,20 @@ public class VeterinarioController {
 		}
 		return new ResponseEntity<List<Veterinario>>(veterinarios, HttpStatus.OK);
 	}
-	
-	//retorna un Veterinario por id
-	@GetMapping("/{id}")
-	public ResponseEntity<Veterinario> encontrar(@PathVariable("id") long id) {
-		Veterinario veterinario = veterinarioService.encontrar(id);
-		if (veterinario == null) {
-			return new ResponseEntity<Veterinario>(HttpStatus.NOT_FOUND);
+
+	 //Recupero todas los Veterinarios x validacion
+	@GetMapping(value="/XValidacion", produces={MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<List<Veterinario>> listarXValidacion(
+			@RequestParam("validados") Boolean validados) {
+		List<Veterinario> veterinarios = veterinarioService.listarXValidacion(validados);
+		if(veterinarios.isEmpty()){
+			return new ResponseEntity<List<Veterinario>>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<Veterinario>(veterinario, HttpStatus.OK);
+		return new ResponseEntity<List<Veterinario>>(veterinarios, HttpStatus.OK);
 	}
 	
 	//guarda un Veterinario
-	@PostMapping
+	//@PostMapping
 	public ResponseEntity<Veterinario> guardar(@Valid @RequestBody Veterinario vet) {
 		if (veterinarioService.existe(vet)) {
 			return new ResponseEntity<Veterinario>(HttpStatus.CONFLICT);
@@ -74,9 +72,9 @@ public class VeterinarioController {
 	}
 	
 	//actualiza un Veterinario
-	@PutMapping("/{id}")
+	//@PutMapping("/{id}")
 	public ResponseEntity<Veterinario> actualizar(
-			@PathVariable("id") long id, @Valid @RequestBody Veterinario v) {
+			/*@PathVariable("id")*/ long id, @Valid @RequestBody Veterinario v) {
 		Veterinario veterinario = veterinarioService.encontrar(id);
 		if (veterinario == null) {
 			return new ResponseEntity<Veterinario>(HttpStatus.NOT_FOUND);
@@ -91,17 +89,6 @@ public class VeterinarioController {
 		veterinario.setDomicilioClinica(v.getDomicilioClinica());
 		Veterinario veterinarioUpdated = (Veterinario) veterinarioService.actualizar(veterinario);
 		return new ResponseEntity<Veterinario>(veterinarioUpdated, HttpStatus.OK);
-	}
-	
-	//borra un Veterinario
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Veterinario> eliminar(@PathVariable("id") long id) {
-		Veterinario veterinario = veterinarioService.encontrar(id);
-		if (veterinario == null) {
-			return new ResponseEntity<Veterinario>(HttpStatus.NOT_FOUND);
-		}
-		veterinarioService.eliminar(id);
-		return new ResponseEntity<Veterinario>(HttpStatus.NO_CONTENT);
 	}
 
 }

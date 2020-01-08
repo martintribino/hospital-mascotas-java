@@ -8,11 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,18 +38,8 @@ public class AdministradorController {
 		return new ResponseEntity<List<Administrador>>(administradores, HttpStatus.OK);
 	}
 	
-	//retorna un Administrador por id
-	@GetMapping("/{id}")
-	public ResponseEntity<Administrador> encontrar(@PathVariable("id") long id) {
-		Administrador admin = adminService.encontrar(id);
-		if (admin == null) {
-			return new ResponseEntity<Administrador>(HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<Administrador>(admin, HttpStatus.OK);
-	}
-	
 	//guarda un Administrador
-	@PostMapping
+	//@PostMapping
 	public ResponseEntity<Administrador> guardar(@Valid @RequestBody Administrador admin) {
 		if (adminService.existe(admin)) {
 			return new ResponseEntity<Administrador>(admin, HttpStatus.CONFLICT);
@@ -78,8 +64,8 @@ public class AdministradorController {
 	}
 	
 	//actualiza un Administrador
-	@PutMapping("/{id}")
-	public ResponseEntity<Administrador> actualizar(@PathVariable("id") long id,
+	//@PutMapping("/{id}")
+	public ResponseEntity<Administrador> actualizar(/*@PathVariable("id")*/ long id,
 											  @Valid @RequestBody Administrador admin) {
 		Administrador administrador = adminService.encontrar(id);
 		if (administrador == null || administrador.getUsuario() == null) {
@@ -93,17 +79,6 @@ public class AdministradorController {
 		administrador.setDomicilio(admin.getDomicilio());
 		Administrador adminUpdated = (Administrador) adminService.actualizar(administrador);
 		return new ResponseEntity<Administrador>(adminUpdated, HttpStatus.OK);
-	}
-	
-	//borra un Administrador
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Administrador> eliminar(@PathVariable("id") long id) {
-		Administrador admin = adminService.encontrar(id);
-		if (admin == null) {
-			return new ResponseEntity<Administrador>(HttpStatus.NOT_FOUND);
-		}
-		adminService.eliminar(id);
-		return new ResponseEntity<Administrador>(HttpStatus.NO_CONTENT);
 	}
 
 }

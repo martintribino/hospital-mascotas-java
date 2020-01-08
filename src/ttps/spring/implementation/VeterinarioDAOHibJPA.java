@@ -38,4 +38,12 @@ public class VeterinarioDAOHibJPA extends GenericDAOHibJPA<Veterinario>
 		return (List<Veterinario>) consulta.getResultList();
 	}
 
+	@Override
+	public List<Veterinario> recuperarVeterinariosXValidacion(Boolean validados) {
+		Query consulta = this.getEntityManager()
+				.createQuery("select v from Veterinario v where v.validado = :validados");
+		consulta.setParameter("validados", validados);
+		return (List<Veterinario>) consulta.getResultList();
+	}
+
 }

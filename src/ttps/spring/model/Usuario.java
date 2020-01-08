@@ -31,7 +31,6 @@ public class Usuario implements Serializable {
 	@JsonIgnore
 	private Long id;
 	@Column(name="nombre_usuario", unique=true, updatable= true)
-	@JsonProperty("nombre_usuario")
     @Size(min = 4, max = 50, message = "nombre debe tener entre 4 y 50 caracteres")
 	private String nombreUsuario;
     @Size(min = 4, max = 150, message = "clave debe tener entre 4 y 150 caracteres")

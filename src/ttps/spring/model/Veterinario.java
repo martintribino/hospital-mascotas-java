@@ -11,7 +11,6 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ttps.spring.requests.PersonaReqBody;
 
@@ -28,10 +27,8 @@ public class Veterinario extends Persona {
 	private static final long serialVersionUID = 1L;
 
 	@Column(name="nombre_clinica")
-	@JsonProperty("nombre_clinica")
 	private String nombreClinica;
 	@Column(name="domicilio_clinica")
-	@JsonProperty("domicilio_clinica")
 	private String domicilioClinica;
 	private Boolean validado;
 	@OneToMany(mappedBy="veterinario")

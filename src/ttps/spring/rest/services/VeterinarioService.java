@@ -43,5 +43,10 @@ public class VeterinarioService {
 	public List<Veterinario> listar() {
         return veterinarioRepository.recuperarVeterinarios();
     }
+	
+	//retorna una lista de todos los Veterinario
+	public List<Veterinario> listarXValidacion(Boolean validados) {
+        return veterinarioRepository.recuperarVeterinariosXValidacion(validados);
+    }
 
 }

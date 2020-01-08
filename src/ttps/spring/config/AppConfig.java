@@ -14,6 +14,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 @ComponentScan(basePackages = "ttps.spring")
 public class AppConfig implements WebMvcConfigurer {
+	
+	public static final String FRONT_URL = "http://localhost:4200";
 
 	@Override
 	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -23,7 +25,7 @@ public class AppConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-			.allowedOrigins("http://localhost:4200")
+			.allowedOrigins(FRONT_URL)
             .allowedMethods("GET", "PUT", "DELETE", "POST", "OPTIONS")
   		  	.allowedHeaders("X-Auth-Token", "Content-Type", "Authorization")
   		  	.allowCredentials(false)

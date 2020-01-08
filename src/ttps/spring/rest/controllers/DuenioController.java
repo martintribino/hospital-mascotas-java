@@ -8,11 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,18 +35,8 @@ public class DuenioController {
 		return new ResponseEntity<List<Duenio>>(duenios, HttpStatus.OK);
 	}
 	
-	//retorna un Duenio por id
-	@GetMapping("/{id}")
-	public ResponseEntity<Duenio> encontrar(@PathVariable("id") long id) {
-		Duenio duenio = duenioService.encontrar(id);
-		if (duenio == null) {
-			return new ResponseEntity<Duenio>(HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<Duenio>(duenio, HttpStatus.OK);
-	}
-	
 	//guarda un Duenio
-	@PostMapping
+	//@PostMapping
 	public ResponseEntity<Duenio> guardar(@Valid @RequestBody Duenio d) {
 		if (duenioService.existe(d)) {
 			return new ResponseEntity<Duenio>(HttpStatus.CONFLICT); //respuesta 409
@@ -72,8 +58,8 @@ public class DuenioController {
 	}
 	
 	//actualiza un Duenio
-	@PutMapping("/{id}")
-	public ResponseEntity<Duenio> actualizar(@PathVariable("id") long id,
+	//@PutMapping("/{id}")
+	public ResponseEntity<Duenio> actualizar(/*@PathVariable("id")*/ long id,
 											  @Valid @RequestBody Duenio d) {
 		Duenio duenio = duenioService.encontrar(id);
 		if (duenio == null) {
@@ -92,17 +78,6 @@ public class DuenioController {
 		duenio.setUsuario(usuario);
 		Duenio duenioUpdated = (Duenio) duenioService.actualizar(duenio);
 		return new ResponseEntity<Duenio>(duenioUpdated, HttpStatus.OK);
-	}
-	
-	//borra un Duenio
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Duenio> eliminar(@PathVariable("id") long id) {
-		Duenio duenio = duenioService.encontrar(id);
-		if (duenio == null) {
-			return new ResponseEntity<Duenio>(HttpStatus.NOT_FOUND);
-		}
-		duenioService.eliminar(id);
-		return new ResponseEntity<Duenio>(HttpStatus.NO_CONTENT);
 	}
 
 }

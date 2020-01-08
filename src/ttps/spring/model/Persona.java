@@ -37,7 +37,9 @@ public class Persona implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@JsonIgnore
 	private Long id;
-    @Size(min = 2, max = 40, message = "nombre debe tener entre 2 y 40 caracteres")
+    /*@Column(unique=true, insertable = false, updatable = false)
+    @NotBlank
+    private String slug;*/
 	private String nombre;
     @Size(min = 2, max = 40, message = "apellido debe tener entre 2 y 40 caracteres")
 	private String apellido;
