@@ -30,16 +30,12 @@ public class Persona implements Serializable {
 	/**
 	 * Clase Persona
 	 */
-	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 4386757816770501248L;
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@JsonIgnore
 	private Long id;
-    /*@Column(unique=true, insertable = false, updatable = false)
-    @NotBlank
-    private String slug;*/
 	private String nombre;
     @Size(min = 2, max = 40, message = "apellido debe tener entre 2 y 40 caracteres")
 	private String apellido;

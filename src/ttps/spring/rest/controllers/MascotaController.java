@@ -10,15 +10,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ttps.spring.exceptions.BadRequestException;
+import ttps.spring.exceptions.MascotaNotFoundException;
 import ttps.spring.exceptions.UserNotFoundException;
 import ttps.spring.model.Duenio;
 import ttps.spring.model.Mascota;
 import ttps.spring.model.Persona;
 import ttps.spring.model.Usuario;
+import ttps.spring.model.Veterinario;
 import ttps.spring.requests.MascotaReqBody;
 import ttps.spring.rest.services.DuenioService;
 import ttps.spring.rest.services.MascotaService;
 import ttps.spring.rest.services.UsuarioService;
+import ttps.spring.rest.services.VeterinarioService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +44,8 @@ public class MascotaController {
 	private UsuarioService usuService;
 	@Autowired
 	private DuenioService duenioServ;
+	@Autowired
+	private VeterinarioService vetServ;
 	
 	 //Recupero todas los mascotas
 	@GetMapping(value="/api/mascotas", produces={MediaType.APPLICATION_JSON_VALUE})
@@ -85,9 +91,9 @@ public class MascotaController {
 		return new ResponseEntity<List<Mascota>>(mascotasReturn, HttpStatus.OK);
 	}
 	
-	//retorna mascotas por dueno
-	@GetMapping(value="/api/mascotas/duenio/", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<List<Mascota>> listarPorDuenio(@RequestParam("username") String userName) {
+	//retorna mascotas por duenio
+	@GetMapping(value="/api/mascotas/usuario/", produces={MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<List<Mascota>> listarPorUsuario(@RequestParam("username") String userName) {
 		Usuario usu = usuService.recuperarUsuarioPorNombre(userName);
 		if(usu == null) {
 	         throw new UserNotFoundException("Usuario no válido: " + userName);
@@ -96,11 +102,26 @@ public class MascotaController {
 		if(perfil == null) {
 	         throw new UserNotFoundException("Perfil no encontrado." );
 	    }
-		List<Mascota> mascotas = mascotaService.listarPorDuenio(perfil.getId());
-		if (mascotas.isEmpty()) {
-			return new ResponseEntity<List<Mascota>>(HttpStatus.NO_CONTENT);
+		try
+		{
+			List<Mascota> mascotas = new ArrayList<Mascota>();
+			switch (perfil.getRole()) {
+				case "administrador":
+			        throw new BadRequestException("No role." );
+				case "duenio":
+					mascotas = mascotaService.listarPorDuenio(perfil.getId());
+					break;
+				case "veterinario":
+					mascotas = mascotaService.listarPorVeterinario(perfil.getId());
+					break;
+				default:
+			        throw new BadRequestException("No role." );
+			}
+			return new ResponseEntity<List<Mascota>>(mascotas, HttpStatus.OK);
 		}
-		return new ResponseEntity<List<Mascota>>(mascotas, HttpStatus.OK);
+		catch (Exception e) {
+	        throw e;
+		}
 	}
 	
 	//retorna una mascota por id
@@ -113,9 +134,9 @@ public class MascotaController {
 		return new ResponseEntity<Mascota>(mascota, HttpStatus.OK);
 	}
 	
-	//guarda una mascota
+	//guarda una mascota para un usuario veterinario o duenio
 	@PostMapping(value="/api/mascotas", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<Mascota> guardar(@RequestBody MascotaReqBody mascota) {
+	public ResponseEntity<Mascota> guardar(@Valid @RequestBody MascotaReqBody mascota) {
 		String userName = mascota.getUsername();
 		Usuario usu = usuService.recuperarUsuarioPorNombre(userName);
 		if(usu == null) {
@@ -127,7 +148,6 @@ public class MascotaController {
 	    }
 		try {
 			Mascota masc = new Mascota();
-			Duenio d = duenioServ.encontrar(perfil.getId());
 			masc.setNombre(mascota.getNombre());
 			masc.setEspecie(mascota.getEspecie());
 			masc.setRaza(mascota.getRaza());
@@ -136,23 +156,48 @@ public class MascotaController {
 			masc.setSenias(mascota.getSenias());
 			masc.setFechaNacimiento(mascota.getFechaNacimiento());
 			masc.setImagen(mascota.getImagen());
-			masc.setDuenio(d);
+			masc.setDuenio(null);
+			masc.setVeterinario(null);
+			switch (perfil.getRole()) {
+				case "administrador":
+			        throw new BadRequestException("No role." );
+				case "duenio":
+					Duenio d = duenioServ.encontrar(perfil.getId());
+					masc.setDuenio(d);
+					break;
+				case "veterinario":
+					Veterinario v = vetServ.encontrar(perfil.getId());
+					masc.setVeterinario(v);
+					break;
+				default:
+			        throw new BadRequestException("No role." );
+			}
 			Mascota mascotaCreated = (Mascota) mascotaService.guardar(masc);
 			return new ResponseEntity<Mascota>(mascotaCreated, HttpStatus.CREATED);
 		}
 		catch (Exception e) {
-			System.out.println(e);
-			return new ResponseEntity<Mascota>(HttpStatus.BAD_REQUEST);
+	        throw e;
 		}
 	}
 	
 	//actualiza una mascota
-	@PutMapping(value="/api/mascotas/{id}", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<Mascota> actualizar(@PathVariable("id") long id,
-											  @Valid @RequestBody Mascota mascParam) {
-		Mascota mascota = mascotaService.encontrar(id);
+	@PutMapping(value="/api/mascotas", produces={MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<Mascota> actualizar(@Valid @RequestBody MascotaReqBody mascParam) {
+		String userName = mascParam.getUsername();
+		Usuario usu = usuService.recuperarUsuarioPorNombre(userName);
+		if (usu == null) {
+	         throw new UserNotFoundException("Usuario no válido: " + userName);
+	    }
+		Persona perfil = usu.getPersona();
+		if (perfil == null) {
+	         throw new UserNotFoundException("Perfil no encontrado." );
+	    }
+		Mascota mascota = mascotaService.encontrar(mascParam.getSlug());
 		if (mascota == null) {
-			return new ResponseEntity<Mascota>(HttpStatus.NOT_FOUND); //Código de respuesta 404
+	         throw new MascotaNotFoundException("Mascota no encontrada." );
+	    }
+		if (mascota.getDuenio() == null || mascota.getDuenio().getId() != perfil.getId()) {
+			throw new MascotaNotFoundException("Dueño incorrecto." );
 		}
 		mascota.setNombre(mascParam.getNombre());
 		mascota.setFechaNacimiento(mascParam.getFechaNacimiento());
@@ -162,19 +207,36 @@ public class MascotaController {
 		mascota.setColor(mascParam.getColor());
 		mascota.setSenias(mascParam.getSenias());
 		mascota.setImagen(mascParam.getImagen());
-		Mascota mascotaUpdated = (Mascota) mascotaService.actualizar(mascota);
+		Mascota mascotaUpdated = mascotaService.actualizar(mascota);
 		return new ResponseEntity<Mascota>(mascotaUpdated, HttpStatus.OK);
 	}
 	
 	//borra una mascota
-	@DeleteMapping(value="/api/mascotas/{id}", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<Mascota> eliminar(@PathVariable("id") long id) {
-		Mascota mascota = mascotaService.encontrar(id);
+	@DeleteMapping(value="/api/mascotas", produces={MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<Mascota> eliminar(
+			@RequestParam("username") String userName,
+			@RequestParam("slg") String slug
+			) {
+		Usuario usu = usuService.recuperarUsuarioPorNombre(userName);
+		if(usu == null) {
+	         throw new UserNotFoundException("Usuario no válido: " + userName);
+	    }
+		Mascota mascota = mascotaService.encontrar(slug);
 		if (mascota == null) {
-			return new ResponseEntity<Mascota>(HttpStatus.NOT_FOUND);
+	         throw new MascotaNotFoundException("No se encontró mascota.");
 		}
-		mascotaService.eliminar(id);
-		return new ResponseEntity<Mascota>(HttpStatus.NO_CONTENT);
+		if(mascota.getDuenio().getId() != usu.getPersona().getId()) {
+	         throw new BadRequestException("Dueño no valido: " + userName);
+	    }
+		try
+		{
+			mascotaService.eliminar(mascota.getId());
+			return new ResponseEntity<Mascota>(HttpStatus.NO_CONTENT);
+		}
+		catch (Exception ex)
+		{
+	         throw ex;
+		}
 	}
 
 }

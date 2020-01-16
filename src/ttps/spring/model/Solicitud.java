@@ -1,25 +1,32 @@
 package ttps.spring.model;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Entity
-@Table(name="solicitud")
-public class Solicitud {
+import ttps.spring.helpers.GenericHelper;
 
+@Entity
+@Table( name="solicitud",
+		indexes={@Index(name="solicitud_fk",columnList="mascota_id,veterinario_id",unique=true)}
+)
+public class Solicitud implements Serializable {
 	/**
 	 * Clase Estado Solicitud
 	 */
+	private static final long serialVersionUID = -3348782479275251828L;
 
 	public static enum Estados {
 	  ESPERA,
@@ -30,14 +37,16 @@ public class Solicitud {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@JsonIgnore
 	private Long id;
+	@Column(name="slug", insertable = true, updatable = false, nullable = false)
+	private String slug;
 	private Date fecha;
 	private Solicitud.Estados estado;
 	@ManyToOne(optional = true)
-	@JoinColumn(name="mascota_id")
+	@JoinColumn(name="mascota_id", nullable = false)
 	@JsonIgnore
 	private Mascota mascota;
 	@ManyToOne(optional = true)
-	@JoinColumn(name="veterinario_id")
+	@JoinColumn(name="veterinario_id", nullable = false)
 	@JsonIgnore
 	private Veterinario veterinario;
 	
@@ -49,6 +58,7 @@ public class Solicitud {
 		this.setEstado(Solicitud.Estados.ESPERA);
 		this.setMascota(new Mascota());
 		this.setVeterinario(new Veterinario());
+		this.generarSlug();
 	}
 	
 	public Solicitud(
@@ -60,8 +70,25 @@ public class Solicitud {
 		this.setEstado(estado);
 		this.setMascota(mascota);
 		this.setVeterinario(veterinario);
+		this.generarSlug();
 	}
-	
+
+	private void generarSlug() {
+		this.slug = GenericHelper.slugToday();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getSlug() {
+		return slug;
+	}
+
 	public Date getFecha() {
 		return fecha;
 	}

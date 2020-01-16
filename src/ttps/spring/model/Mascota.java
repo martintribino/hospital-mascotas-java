@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -29,15 +30,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import ttps.spring.helpers.GenericHelper;
+
 @Entity
 @Table(name="mascota")
 public class Mascota implements Serializable {
-
 	/**
 	 * Clase Mascota
 	 */
-
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 263020006357396096L;
 
 	//Constantes para habilitar/deshabilitar metodos para mostrar en la ficha publica
 	@JsonIgnore
@@ -55,7 +56,9 @@ public class Mascota implements Serializable {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@JsonIgnore
 	private Long id;
-    @Size(min = 4, max = 12, message = "nombre debe tener entre 2 y 40 caracteres")
+	@Column(name="slug", insertable = true, updatable = false, nullable = false)
+	private String slug;
+    @Size(min = 2, max = 40, message = "nombre debe tener entre 2 y 40 caracteres")
 	private String nombre;
 	@NotBlank(message = "Por favor proporcione especie")
 	private String especie;
@@ -66,11 +69,9 @@ public class Mascota implements Serializable {
 	private String color;
 	private String senias;
 	@Column(name="fecha_nacimiento")
-	@JsonProperty("fecha_nacimiento")
 	@Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.DATE_FORMAT)
     @Past(message = "Por favor proporcione una fecha de nacimiento válida")
-	//@NotBlank(message = "Por favor proporcione una fecha de nacimiento")
 	private Date fechaNacimiento;
 	private String imagen;
 	@Column(name="metodos_publicos")
@@ -89,7 +90,7 @@ public class Mascota implements Serializable {
 	@OneToMany(mappedBy="mascota")
 	@JsonIgnore
 	private List<Evento> eventos;
-	@OneToMany(mappedBy="mascota")
+	@OneToMany(mappedBy="mascota", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private List<Solicitud> solicitudes;
 
@@ -106,6 +107,7 @@ public class Mascota implements Serializable {
 		this.setVeterinario(null);
 		this.setSolicitudes(new ArrayList<Solicitud>());
 		this.metodosPublicos = new ArrayList<String>();
+		this.generarSlug();
 		this.setEventos(new ArrayList<Evento>());
 		this.habilitarNombre();
 		this.habilitarEspecie();
@@ -137,10 +139,15 @@ public class Mascota implements Serializable {
 		this.setVeterinario(veterinario);
 		this.setSolicitudes(new ArrayList<Solicitud>());
 		this.setEventos(new ArrayList<Evento>());
+		this.generarSlug();
 		this.habilitarNombre();
 		this.habilitarEspecie();
 		this.habilitarRaza();
 		this.habilitarFecha();
+	}
+
+	private void generarSlug() {
+		this.slug = GenericHelper.slugToday();
 	}
 
 	public Long getId() {
@@ -149,6 +156,10 @@ public class Mascota implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getSlug() {
+		return slug;
 	}
 
 	public String getNombre() {

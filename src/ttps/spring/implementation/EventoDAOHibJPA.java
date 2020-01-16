@@ -2,7 +2,7 @@ package ttps.spring.implementation;
 
 import java.util.List;
 
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
 
@@ -33,145 +33,145 @@ public class EventoDAOHibJPA extends GenericDAOHibJPA<Evento>
 
 	@Override
 	public List<Visita> recuperarVisitas() {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT m FROM Evento m WHERE m.tipoEvento = 'Visita'");
+		TypedQuery<Visita> consulta = this.getEntityManager()
+				.createQuery("SELECT m FROM Evento m WHERE m.tipoEvento = 'Visita'", Visita.class);
 		return (List<Visita>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Visita> recuperarVisitasPorVeterinario(Veterinario v) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Visita' and e.veterinario.id = :veterinarioId");
+		TypedQuery<Visita> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Visita' and e.veterinario.id = :veterinarioId", Visita.class);
 		consulta.setParameter("veterinarioId", v.getId());
 		return (List<Visita>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Visita> recuperarVisitasPorMascota(Mascota m) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Visita' and e.mascota.id = :mascotaId");
+		TypedQuery<Visita> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Visita' and e.mascota.id = :mascotaId", Visita.class);
 		consulta.setParameter("mascotaId", m.getId());
 		return (List<Visita>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Vacuna> recuperarVacunas() {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Vacuna'");
+		TypedQuery<Vacuna> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Vacuna'", Vacuna.class);
 		return (List<Vacuna>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Vacuna> recuperarVacunasPorMascota(Mascota m) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Vacuna' and e.mascota.id = :mascotaId");
+		TypedQuery<Vacuna> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Vacuna' and e.mascota.id = :mascotaId", Vacuna.class);
 		consulta.setParameter("mascotaId", m.getId());
 		return (List<Vacuna>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Vacuna> recuperarVacunasPorVeterinario(Veterinario v) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Vacuna' and e.veterinario.id = :mascotaId");
+		TypedQuery<Vacuna> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Vacuna' and e.veterinario.id = :mascotaId", Vacuna.class);
 		consulta.setParameter("mascotaId", v.getId());
 		return (List<Vacuna>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Reproduccion> recuperarReproducciones() {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT m FROM Evento m WHERE m.tipoEvento = 'Reproduccion'");
+		TypedQuery<Reproduccion> consulta = this.getEntityManager()
+				.createQuery("SELECT m FROM Evento m WHERE m.tipoEvento = 'Reproduccion'", Reproduccion.class);
 		return (List<Reproduccion>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Reproduccion> recuperarReproduccionesPorMascota(Mascota m) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Reproduccion' and e.mascota.id = :mascotaId");
+		TypedQuery<Reproduccion> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Reproduccion' and e.mascota.id = :mascotaId", Reproduccion.class);
 		consulta.setParameter("mascotaId", m.getId());
 		return (List<Reproduccion>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Reproduccion> recuperarReproduccionesPorVeterinario(Veterinario v) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Reproduccion' and e.veterinario.id = :veterinarioId");
+		TypedQuery<Reproduccion> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Reproduccion' and e.veterinario.id = :veterinarioId", Reproduccion.class);
 		consulta.setParameter("veterinarioId", v.getId());
 		return (List<Reproduccion>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Intervencion> recuperarIntervenciones() {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT m FROM Evento m WHERE m.tipoEvento = 'Intervencion'");
+		TypedQuery<Intervencion> consulta = this.getEntityManager()
+				.createQuery("SELECT m FROM Evento m WHERE m.tipoEvento = 'Intervencion'", Intervencion.class);
 		return (List<Intervencion>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Intervencion> recuperarIntervencionesPorMascota(Mascota m) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Intervencion' and e.mascota.id = :mascotaId");
+		TypedQuery<Intervencion> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Intervencion' and e.mascota.id = :mascotaId", Intervencion.class);
 		consulta.setParameter("mascotaId", m.getId());
 		return (List<Intervencion>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Intervencion> recuperarIntervencionesPorVeterinario(Veterinario v) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Intervencion' and e.veterinario.id = :veterinarioId");
+		TypedQuery<Intervencion> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Intervencion' and e.veterinario.id = :veterinarioId", Intervencion.class);
 		consulta.setParameter("veterinarioId", v.getId());
 		return (List<Intervencion>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Desparasitacion> recuperarDesparasitaciones() {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Desparasitacion'");
+		TypedQuery<Desparasitacion> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Desparasitacion'", Desparasitacion.class);
 		return (List<Desparasitacion>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Desparasitacion> recuperarDesparasitacionesPorMascota(Mascota m) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Desparasitacion' and e.mascota.id = :mascotaId");
+		TypedQuery<Desparasitacion> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Desparasitacion' and e.mascota.id = :mascotaId", Desparasitacion.class);
 		consulta.setParameter("mascotaId", m.getId());
 		return (List<Desparasitacion>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Desparasitacion> recuperarDesparasitacionesPorVeterinario(Veterinario v) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Desparasitacion' and e.veterinario.id = :veterinarioId");
+		TypedQuery<Desparasitacion> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Desparasitacion' and e.veterinario.id = :veterinarioId", Desparasitacion.class);
 		consulta.setParameter("veterinarioId", v.getId());
 		return (List<Desparasitacion>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Evento> recuperarEventos() {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e");
+		TypedQuery<Evento> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e", Evento.class);
 		return (List<Evento>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Enfermedad> recuperarEnfermedades() {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Enfermedad'");
+		TypedQuery<Enfermedad> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Enfermedad'", Enfermedad.class);
 		return (List<Enfermedad>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Enfermedad> recuperarEnfermedadesPorMascota(Mascota m) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Enfermedad' and e.mascota.id = :mascotaId");
+		TypedQuery<Enfermedad> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Enfermedad' and e.mascota.id = :mascotaId", Enfermedad.class);
 		consulta.setParameter("mascotaId", m.getId());
 		return (List<Enfermedad>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Enfermedad> recuperarEnfermedadesPorVeterinario(Veterinario v) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Enfermedad' and e.veterinario.id = :veterinarioId");
+		TypedQuery<Enfermedad> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.tipoEvento = 'Enfermedad' and e.veterinario.id = :veterinarioId", Enfermedad.class);
 		consulta.setParameter("veterinarioId", v.getId());
 		return (List<Enfermedad>) consulta.getResultList();
 	}
@@ -180,8 +180,8 @@ public class EventoDAOHibJPA extends GenericDAOHibJPA<Evento>
 	public Mascota recuperarMascota(Evento e) {
 		Mascota m = null;
 		if(e.getMascota() != null) {
-			Query consulta = this.getEntityManager()
-					.createQuery("SELECT m FROM Mascota m WHERE m.id = :mascotaId");
+			TypedQuery<Mascota> consulta = this.getEntityManager()
+					.createQuery("SELECT m FROM Mascota m WHERE m.id = :mascotaId", Mascota.class);
 			consulta.setParameter("mascotaId", e.getMascota().getId());
 			List<Mascota> mList = (List<Mascota>) consulta.getResultList();
 			if (mList.size() == 1) {
@@ -195,8 +195,8 @@ public class EventoDAOHibJPA extends GenericDAOHibJPA<Evento>
 	public Veterinario recuperarVeterinario(Evento e) {
 		Veterinario v = null;
 		if(e.getVeterinario() != null) {
-			Query consulta = this.getEntityManager()
-					.createQuery("SELECT v FROM Veterinario v WHERE v.id = :veterinarioId");
+			TypedQuery<Veterinario> consulta = this.getEntityManager()
+					.createQuery("SELECT v FROM Veterinario v WHERE v.id = :veterinarioId", Veterinario.class);
 			consulta.setParameter("veterinarioId", e.getVeterinario().getId());
 			List<Veterinario> vList = (List<Veterinario>) consulta.getResultList();
 			if (vList.size() == 1) {

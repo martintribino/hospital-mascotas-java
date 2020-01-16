@@ -8,7 +8,7 @@ import ttps.spring.dao.IGenericDAO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,18 +84,7 @@ public class GenericDAOHibJPA<T> implements Serializable, IGenericDAO<T> {
 		List<T> list = new ArrayList<T>();
 		String strQuery = String.format("SELECT m FROM %s m ORDER BY m.%s %s",
 				this.entityClass.getSimpleName(), columnOrder, order);
-		Query q = this.getEntityManager().createQuery(strQuery);
-		list = (List<T>) q.getResultList();
-		return list;
-	}
-
-	@Override
-	public List<T> ejecutarQuery(String query) {
-		List<T> list = new ArrayList<T>();
-		System.out.println(query);
-		System.out.println(this.getEntityManager());
-		Query q = this.getEntityManager().createQuery(query);
-		System.out.println(q);
+		TypedQuery<T> q = this.getEntityManager().createQuery(strQuery, this.entityClass);
 		list = (List<T>) q.getResultList();
 		return list;
 	}

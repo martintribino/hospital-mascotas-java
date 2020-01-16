@@ -14,17 +14,15 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import ttps.spring.model.Encrypt;
 
 @Entity
 @Table(name="usuario")
 public class Usuario implements Serializable {
 	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	/**
 	 * Clase Usuario
 	 */
+	private static final long serialVersionUID = 2683988584852057037L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-package ttps.spring.rest.services;
+package ttps.spring.requests;
 
 public class LoginRequestModel {
 

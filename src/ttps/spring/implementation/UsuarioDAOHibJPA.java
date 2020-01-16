@@ -2,7 +2,7 @@ package ttps.spring.implementation;
 
 import java.util.List;
 
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +27,8 @@ implements IUsuarioDAO {
 
 	@Override
 	public List<Usuario> recuperarUsuario(String userName) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT u FROM Usuario u WHERE u.nombreUsuario = :nombreUsu");
+		TypedQuery<Usuario> consulta = this.getEntityManager()
+				.createQuery("SELECT u FROM Usuario u WHERE u.nombreUsuario = :nombreUsu", Usuario.class);
 		consulta.setParameter("nombreUsu", userName);
 		return (List<Usuario>) consulta.getResultList();
 	}

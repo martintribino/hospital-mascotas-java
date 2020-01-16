@@ -19,6 +19,11 @@ public class MascotaService {
         return mascotaRepository.encontrar(id);
     }
 
+	//retorna una mascota por slug
+	public Mascota encontrar(String slug) {
+        return mascotaRepository.encontrar(slug);
+    }
+
 	//comprueba si existe una mascota
 	public Boolean existe(Mascota mascota) {
         return mascotaRepository.existe(mascota);

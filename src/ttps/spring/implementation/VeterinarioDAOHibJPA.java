@@ -2,10 +2,11 @@ package ttps.spring.implementation;
 
 import java.util.List;
 
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
 
+import ttps.spring.implementation.GenericDAOHibJPA;
 import ttps.spring.dao.IVeterinarioDAO;
 import ttps.spring.model.Veterinario;
 
@@ -24,24 +25,16 @@ public class VeterinarioDAOHibJPA extends GenericDAOHibJPA<Veterinario>
 	}
 
 	@Override
-	public List<Veterinario> recuperarVeterinario(String userName) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT v from Veterinario v WHERE v.usuario = :nombreUsu");
-		consulta.setParameter("nombreUsu", userName);
-		return (List<Veterinario>) consulta.getResultList();
-	}
-
-	@Override
 	public List<Veterinario> recuperarVeterinarios() {
-		Query consulta = this.getEntityManager()
-				.createQuery("select v from Veterinario v");
+		TypedQuery<Veterinario> consulta = this.getEntityManager()
+				.createQuery("select v from Veterinario v", Veterinario.class);
 		return (List<Veterinario>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Veterinario> recuperarVeterinariosXValidacion(Boolean validados) {
-		Query consulta = this.getEntityManager()
-				.createQuery("select v from Veterinario v where v.validado = :validados");
+		TypedQuery<Veterinario> consulta = this.getEntityManager()
+				.createQuery("select v from Veterinario v where v.validado = :validados", Veterinario.class);
 		consulta.setParameter("validados", validados);
 		return (List<Veterinario>) consulta.getResultList();
 	}

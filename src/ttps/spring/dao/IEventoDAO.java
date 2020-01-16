@@ -2,6 +2,7 @@ package ttps.spring.dao;
 
 import java.util.List;
 
+import ttps.spring.dao.IGenericDAO;
 import ttps.spring.model.Desparasitacion;
 import ttps.spring.model.Enfermedad;
 import ttps.spring.model.Evento;

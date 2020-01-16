@@ -6,14 +6,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseBody
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-public class UserNotFoundException extends RuntimeException {
+public class MascotaNotFoundException extends RuntimeException {
 
 	/**
-	 * UserNotFoundException
+	 * MascotaNotFoundException
 	 */
-	private static final long serialVersionUID = 4759163418221122290L;
+	private static final long serialVersionUID = 8445696547678153184L;
 
-	public UserNotFoundException(String exception) {
+	public MascotaNotFoundException(String exception) {
         super(exception);
 	}
 

@@ -17,5 +17,4 @@ public interface IGenericDAO<T> {
 	void eliminar(T entity);
 	T eliminar(Serializable id);
 	List<T> listar(String columnOrder, String order);
-	List<T> ejecutarQuery(String query);
 }

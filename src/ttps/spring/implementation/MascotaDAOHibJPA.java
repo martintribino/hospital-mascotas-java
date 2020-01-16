@@ -2,7 +2,7 @@ package ttps.spring.implementation;
 
 import java.util.List;
 
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
 
@@ -24,25 +24,34 @@ public class MascotaDAOHibJPA extends GenericDAOHibJPA<Mascota>
 
 	@Override
 	public List<Mascota> recuperarMascotas() {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT m FROM Mascota m");
+		TypedQuery<Mascota> consulta = this.getEntityManager()
+				.createQuery("SELECT m FROM Mascota m", Mascota.class );
 		return (List<Mascota>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Mascota> recuperarMascotasPorDuenio(long id) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT m from Mascota m WHERE m.duenio.id = :idDuenio");
+		TypedQuery<Mascota> consulta = this.getEntityManager()
+				.createQuery("SELECT m from Mascota m WHERE m.duenio.id = :idDuenio", Mascota.class);
 		consulta.setParameter("idDuenio", id);
 		return (List<Mascota>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Mascota> recuperarMascotasPorVeterinario(long id) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT m from Mascota m WHERE m.veterinario.id = :idVet");
+		TypedQuery<Mascota> consulta = this.getEntityManager()
+				.createQuery("SELECT m from Mascota m WHERE m.veterinario.id = :idVet", Mascota.class);
 		consulta.setParameter("idVet", id);
 		return (List<Mascota>) consulta.getResultList();
+	}
+
+	@Override
+	public Mascota encontrar(String slug) {
+		TypedQuery<Mascota> consulta = this.getEntityManager()
+				.createQuery("SELECT m from Mascota m WHERE m.slug = :slug", Mascota.class);
+		consulta.setParameter("slug", slug);
+		Mascota mascota = consulta.getSingleResult();
+		return mascota;
 	}
 
 }

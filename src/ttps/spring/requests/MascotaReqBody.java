@@ -10,11 +10,14 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
+import ttps.spring.helpers.GenericHelper;
 
 public class MascotaReqBody {
 
-    @Size(min = 4, max = 12, message = "nombre debe tener entre 2 y 40 caracteres")
+	@Column(name="slug", insertable = true, updatable = false, nullable = false)
+	private String slug;
+    @Size(min = 2, max = 40, message = "nombre debe tener entre 2 y 40 caracteres")
 	private String nombre;
 	@NotBlank(message = "Por favor proporcione especie")
 	private String especie;
@@ -25,17 +28,19 @@ public class MascotaReqBody {
 	private String color;
 	private String senias;
 	@Column(name="fecha_nacimiento")
-	@JsonProperty("fecha_nacimiento")
 	@Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.DATE_FORMAT)
     @Past(message = "Por favor proporcione una fecha de nacimiento válida")
-	//@NotBlank(message = "Por favor proporcione una fecha de nacimiento")
 	private Date fechaNacimiento;
 	private String imagen;
 	private String username;
 
 	public MascotaReqBody() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public String getSlug() {
+		return slug;
 	}
 
 	public String getNombre() {

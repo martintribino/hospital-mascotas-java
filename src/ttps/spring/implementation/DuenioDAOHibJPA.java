@@ -2,7 +2,7 @@ package ttps.spring.implementation;
 
 import java.util.List;
 
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
 
@@ -25,15 +25,15 @@ public class DuenioDAOHibJPA extends GenericDAOHibJPA<Duenio>
 
 	@Override
 	public List<Duenio> recuperarDuenios() {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT d FROM Duenio d");
+		TypedQuery<Duenio> consulta = this.getEntityManager()
+				.createQuery("SELECT d FROM Duenio d", Duenio.class);
 		return (List<Duenio>) consulta.getResultList();
 	}
 
 	@Override
 	public List<Duenio> recuperarDuenio(String userName) {
-		Query consulta = this.getEntityManager()
-				.createQuery("SELECT d FROM Duenio d WHERE d.usuario = :nombreUsu");
+		TypedQuery<Duenio> consulta = this.getEntityManager()
+				.createQuery("SELECT d FROM Duenio d WHERE d.usuario = :nombreUsu", Duenio.class);
 		consulta.setParameter("nombreUsu", userName);
 		return (List<Duenio>) consulta.getResultList();
 	}

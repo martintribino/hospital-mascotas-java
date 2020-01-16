@@ -12,6 +12,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import ttps.spring.model.Persona;
 import ttps.spring.requests.PersonaReqBody;
 
 @Entity
