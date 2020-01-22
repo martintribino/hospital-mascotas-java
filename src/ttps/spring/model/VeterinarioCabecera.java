@@ -16,6 +16,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,18 +25,19 @@ import ttps.spring.helpers.GenericHelper;
 
 @Entity
 @Table( name="solicitud",
-		indexes={@Index(name="solicitud_fk",columnList="mascota_id,veterinario_id",unique=true)}
+		indexes={@Index(name="veterinario_cabecera_fk",columnList="mascota_id,veterinario_id",unique=true)}
 )
-public class Solicitud implements Serializable {
+public class VeterinarioCabecera implements Serializable {
+
 	/**
-	 * Clase Estado Solicitud
+	 * VeterinarioCabecera
 	 */
-	private static final long serialVersionUID = -3348782479275251828L;
+	private static final long serialVersionUID = 1831047107500535957L;
 
 	public static enum Estados {
-		ESPERA,
-	  APROBADO,
-	  RECHAZADO
+		ACTIVO,
+		INACTIVO,
+		BORRADO
 	}
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -45,30 +47,34 @@ public class Solicitud implements Serializable {
 	private String slug;
 	@CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="fecha", updatable = true)
+    @Column(name="fecha_creacion", updatable = false) 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.DATE_FORMAT)
-	private Date fecha;
-	private Solicitud.Estados estado;
+	private Date fechaCreacion;
+	@UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="fecha_actualizacion") 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.DATE_FORMAT)
+	private Date fechaActualizacion;
+	private VeterinarioCabecera.Estados estado;
 	@ManyToOne(optional = true)
 	@JoinColumn(name="mascota_id", nullable = true)
 	private Mascota mascota;
 	@ManyToOne(optional = true)
 	@JoinColumn(name="veterinario_id", nullable = true)
 	private Veterinario veterinario;
-	
-	public Solicitud() {
-		this.setEstado(Solicitud.Estados.ESPERA);
+
+	public VeterinarioCabecera() {
+		this.setEstado(VeterinarioCabecera.Estados.ACTIVO);
 		this.setMascota(new Mascota());
 		this.setVeterinario(new Veterinario());
 		this.generarSlug();
 	}
-	
-	public Solicitud(
-			Date fecha,
-			Solicitud.Estados estado,
+
+	public VeterinarioCabecera(
+			VeterinarioCabecera.Estados estado,
 			Mascota mascota,
-			Veterinario veterinario) {
-		this.setFecha(fecha);
+			Veterinario veterinario
+		) {
 		this.setEstado(estado);
 		this.setMascota(mascota);
 		this.setVeterinario(veterinario);
@@ -91,16 +97,19 @@ public class Solicitud implements Serializable {
 		return slug;
 	}
 
-	public Date getFecha() {
-		return fecha;
+	public void setSlug(String slug) {
+		this.slug = slug;
 	}
-	public void setFecha(Date fecha) {
-		this.fecha = fecha;
+
+	public Date getFechaActualizacion() {
+		return fechaActualizacion;
 	}
-	public Solicitud.Estados getEstado() {
+
+	public VeterinarioCabecera.Estados getEstado() {
 		return estado;
 	}
-	public void setEstado(Solicitud.Estados estado) {
+
+	public void setEstado(VeterinarioCabecera.Estados estado) {
 		this.estado = estado;
 	}
 
@@ -118,6 +127,10 @@ public class Solicitud implements Serializable {
 
 	public void setVeterinario(Veterinario veterinario) {
 		this.veterinario = veterinario;
+	}
+
+	public Date getFechaCreacion() {
+		return fechaCreacion;
 	}
 
 }

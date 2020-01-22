@@ -65,9 +65,9 @@ public class PersistenceConfig {
 	private Properties additionalProperties() {
 		Properties properties = new Properties();
 		properties.setProperty("hibernate.hbm2ddl.auto", "update");
-		properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
-		//seems this line breaks JOINED strategy
-		//properties.setProperty("hibernate.default_schema", "veterinaria");
+		properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
+		properties.setProperty("spring.jpa.properties.javax.persistence.validation.mode", "none");
+
 		return properties;
 	}
 		

@@ -2,9 +2,9 @@ package ttps.spring.implementation;
 
 import java.util.List;
 
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 import ttps.spring.dao.ISolicitudDAO;
@@ -17,10 +17,9 @@ public class SolicitudDAOHibJPA extends GenericDAOHibJPA<Solicitud>
 								implements ISolicitudDAO {
 
 	/**
-	 * Duenio DAO Hibernate JPA Implementation
+	 * SolicitudDAOHibJPA
 	 */
-
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 74631803819126428L;
 
 	public SolicitudDAOHibJPA() {
 		super(Solicitud.class);
@@ -51,19 +50,57 @@ public class SolicitudDAOHibJPA extends GenericDAOHibJPA<Solicitud>
 
 	@Override
 	public Solicitud encontrar(String slug) {
-		Solicitud s = this.getEntityManager().unwrap(Session.class)
-				.bySimpleNaturalId(Solicitud.class)
-				.load(slug);
+		Solicitud s = null;
+		TypedQuery<Solicitud> consulta = this.getEntityManager()
+				.createQuery("SELECT s from Solicitud s WHERE s.slug = :slug", Solicitud.class);
+		consulta.setParameter("slug", slug);
+		List<Solicitud> sList = consulta.getResultList();
+		if (!sList.isEmpty()) {
+			s = sList.get(0);
+		}
 		return s;
 	}
 
 	@Override
 	public Solicitud encontrar(Long mascId, Long vetId) {
+		Solicitud s = null;
 		TypedQuery<Solicitud> consulta = this.getEntityManager()
 				.createQuery("SELECT s from Solicitud s WHERE s.veterinario.id = :idVet and s.mascota.id = :idMasc", Solicitud.class);
 		consulta.setParameter("idVet", vetId);
 		consulta.setParameter("idMasc", mascId);
-		return consulta.getSingleResult();
+		List<Solicitud> sList = consulta.getResultList();
+		if (!sList.isEmpty()) {
+			s = sList.get(0);
+		}
+		return s;
+	}
+
+	@Override
+	public List<Solicitud> recuperarSolicitudesPorVeterinarioYEstado(
+			Veterinario v, Solicitud.Estados estado) {
+		TypedQuery<Solicitud> consulta = this.getEntityManager()
+				.createQuery(
+					"SELECT s from Solicitud s WHERE s.veterinario.id = :idVet and  s.estado = :idEst",
+					Solicitud.class);
+		consulta.setParameter("idVet", v.getId());
+		consulta.setParameter("idEst", estado);
+		return consulta.getResultList();
+	}
+
+	@Override
+	public void eliminarXVeterinario(Veterinario v) {
+		Query consulta = this.getEntityManager()
+				.createQuery("DELETE from Solicitud s WHERE s.veterinario.id = :idVet");
+		consulta.setParameter("idVet", v.getId());
+		consulta.executeUpdate();
+	}
+
+	@Override
+	public void eliminarXMascota(Mascota m) {
+		Query consulta = this.getEntityManager()
+				.createQuery("DELETE from Solicitud s WHERE s.mascota.id = :idMasc");
+		consulta.setParameter("idMasc", m.getId());
+		consulta.executeUpdate();
 	}
 
 }

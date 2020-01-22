@@ -1,0 +1,189 @@
+package ttps.spring.helpers;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
+
+import ttps.spring.dao.IAdministradorDAO;
+import ttps.spring.dao.IDuenioDAO;
+import ttps.spring.dao.IMascotaDAO;
+import ttps.spring.dao.ISolicitudDAO;
+import ttps.spring.dao.IVeterinarioDAO;
+import ttps.spring.model.Administrador;
+import ttps.spring.model.Duenio;
+import ttps.spring.model.Encrypt;
+import ttps.spring.model.Mascota;
+import ttps.spring.model.Solicitud;
+import ttps.spring.model.Veterinario;
+
+
+@Component
+public class InitialDataApplication implements ApplicationListener<ContextRefreshedEvent> {
+
+	private static final Logger log = LoggerFactory.getLogger(InitialDataApplication.class);
+
+	@Autowired
+    private IAdministradorDAO adminRepository;
+	@Autowired
+    private IVeterinarioDAO vetRepository;
+	@Autowired
+    private IDuenioDAO dueRepository;
+	@Autowired
+    private IMascotaDAO mascRepository;
+	@Autowired
+    private ISolicitudDAO solRepository;
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		String pass = Encrypt.encode("admin123");
+		//administrador
+		Administrador a = new Administrador(
+				"admin", "Administrador", "Admin Ape", pass, "admin@admin.ad",
+				12365487, 123654, "Domicilio"
+			);
+		// guardar un administrador
+		try
+		{
+			adminRepository.guardar(a);
+			log.info("------------------------------------");
+			log.info("El Administrador fue creado");
+			log.info("------------------------------------");
+		}
+		catch(Exception ex)
+		{
+			log.info("------------------------------------");
+			log.info("El Administrador ya existe");
+			log.info("------------------------------------");
+		}
+		pass = Encrypt.encode("vet123");
+		//veterinarios
+		Veterinario v1 = new Veterinario(
+				"vet1", "Veterinario", "Vet1 Ape", pass, "vet@vet.ve", 12360487, 123054,
+				"Domicilio", "Nombre clinica", "Domicilio Clinica", true
+			);
+		Veterinario v2 = new Veterinario(
+				"vet2", "Veterinario2", "Vet2 Ape", pass, "vet2@vet.ve", 12360287, 223054,
+				"Domicilio", "Nombre clinica", "Domicilio Clinica", false
+			);
+		// guardar veterinarios
+		try
+		{
+			vetRepository.guardar(v1);
+			vetRepository.guardar(v2);
+			log.info("------------------------------------");
+			log.info("Veterinarios creados");
+			log.info("------------------------------------");
+		}
+		catch(Exception ex)
+		{
+			log.info("------------------------------------");
+			log.info("Veterinarios existentes");
+			log.info("------------------------------------");
+		}
+		pass = Encrypt.encode("due123");
+		//Duenios
+		Duenio d1 = new Duenio(
+				"due1", "Duenio 1", "Due1 Ape", pass, "due@due.due", 12365387, 1234554,
+				"Domicilio", new ArrayList<Mascota>()
+			);
+		Duenio d2 = new Duenio(
+				"due2", "Duenio 2", "Due2 Ape", pass, "due2@due.due", 15565387, 1288554,
+				"Domicilio2", new ArrayList<Mascota>()
+			);
+		// guardar duenios
+		try
+		{
+			dueRepository.guardar(d1);
+			dueRepository.guardar(d2);
+			log.info("------------------------------------");
+			log.info("Dueños creados");
+			log.info("------------------------------------");
+		}
+		catch(Exception ex)
+		{
+			log.info("------------------------------------");
+			log.info("Dueños existentes");
+			log.info("------------------------------------");
+		}
+		Date today = Calendar.getInstance().getTime();
+		//Mascotas
+		Mascota m1 = new Mascota(
+				"Masc 1", today, "Pointer", "Pointer", "Masculino", "marrón",
+				"", "", d1
+			);
+		m1.setVeterinario(v1);
+		try {
+			TimeUnit.MILLISECONDS.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		today = Calendar.getInstance().getTime();
+		Mascota m2 = new Mascota(
+				"Masc 2", today, "Pointer2", "Pointer2", "Masculino", "marrón",
+				"", "", d1
+			);
+		try {
+			TimeUnit.MILLISECONDS.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		today = Calendar.getInstance().getTime();
+		Mascota m3 = new Mascota(
+				"Masc 3", today, "Salchicha", "Salchicha", "Femenino", "blanca",
+				"", "", d1
+			);
+		try {
+			TimeUnit.MILLISECONDS.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		today = Calendar.getInstance().getTime();
+		Mascota m4 = new Mascota(
+				"Masc 4", today, "Salchicha2", "Salchicha2", "Femenino", "negra",
+				"", "", d1
+			);
+		// guardar mascotas
+		try
+		{
+			mascRepository.guardar(m1);
+			mascRepository.guardar(m2);
+			mascRepository.guardar(m3);
+			mascRepository.guardar(m4);
+			log.info("------------------------------------");
+			log.info("Mascotas creados");
+			log.info("------------------------------------");
+		}
+		catch(Exception ex)
+		{
+			log.info("------------------------------------");
+			log.info("Mascotas existentes");
+			log.info("------------------------------------");
+		}
+		Solicitud s1 = new Solicitud();
+		s1.setMascota(m2);
+		s1.setVeterinario(v1);
+		// guardar solicitudes
+		try
+		{
+			solRepository.guardar(s1);
+			log.info("------------------------------------");
+			log.info("Solicitudes creadas");
+			log.info("------------------------------------");
+		}
+		catch(Exception ex)
+		{
+			log.info("------------------------------------");
+			log.info("Solicitudes existentes");
+			log.info("------------------------------------");
+		}
+	}
+
+}

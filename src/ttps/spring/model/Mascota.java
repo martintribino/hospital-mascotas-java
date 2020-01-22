@@ -80,19 +80,16 @@ public class Mascota implements Serializable {
 	@JsonIgnore
 	private List<String> metodosPublicos;
 	@ManyToOne(optional = true)
-	@JoinColumn(name="duenio_id")
+	@JoinColumn(name="duenio")
 	@JsonIgnore
 	private Duenio duenio;
 	@ManyToOne(optional = true)
-	@JoinColumn(name="veterinario_id")
+	@JoinColumn(name="veterinario")
 	@JsonIgnore
 	private Veterinario veterinario;
-	@OneToMany(mappedBy="mascota")
-	@JsonIgnore
-	private List<Evento> eventos;
 	@OneToMany(mappedBy="mascota", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
-	private List<Solicitud> solicitudes;
+	private List<Evento> eventos;
 
 	public  Mascota() {
 		this.setNombre("");
@@ -104,11 +101,37 @@ public class Mascota implements Serializable {
 		this.setSexo("");
 		this.setImagen("");
 		this.setDuenio(null);
-		this.setVeterinario(null);
-		this.setSolicitudes(new ArrayList<Solicitud>());
 		this.metodosPublicos = new ArrayList<String>();
 		this.generarSlug();
 		this.setEventos(new ArrayList<Evento>());
+		this.habilitarNombre();
+		this.habilitarEspecie();
+		this.habilitarRaza();
+		this.habilitarFecha();
+	}
+
+	public  Mascota(
+			String nombre,
+			Date fechaNacimiento,
+			String especie,
+			String raza,
+			String sexo,
+			String color,
+			String senias,
+			String imagen,
+			Duenio duenio) {
+		this.setNombre(nombre);
+		this.setFechaNacimiento(fechaNacimiento);
+		this.setEspecie(especie);
+		this.setRaza(raza);
+		this.setSenias(senias);
+		this.setColor(color);
+		this.setSexo(sexo);
+		this.setImagen(imagen);
+		this.metodosPublicos = new ArrayList<String>();
+		this.setDuenio(duenio);
+		this.setEventos(new ArrayList<Evento>());
+		this.generarSlug();
 		this.habilitarNombre();
 		this.habilitarEspecie();
 		this.habilitarRaza();
@@ -137,7 +160,6 @@ public class Mascota implements Serializable {
 		this.metodosPublicos = new ArrayList<String>();
 		this.setDuenio(duenio);
 		this.setVeterinario(veterinario);
-		this.setSolicitudes(new ArrayList<Solicitud>());
 		this.setEventos(new ArrayList<Evento>());
 		this.generarSlug();
 		this.habilitarNombre();
@@ -233,14 +255,6 @@ public class Mascota implements Serializable {
 
 	public void setEventos(List<Evento> eventos) {
 		this.eventos = eventos;
-	}
-
-	public List<Solicitud> getSolicitudes() {
-		return solicitudes;
-	}
-
-	public void setSolicitudes(List<Solicitud> solicitudes) {
-		this.solicitudes = solicitudes;
 	}
 
 	public void habilitarNombre() {
@@ -423,16 +437,6 @@ public class Mascota implements Serializable {
 	
 	public Boolean veterinarioEstaHabilitado() {
 		return this.metodosPublicos.contains(Mascota.METODO_VETERINARIO);
-	}
-
-	@JsonIgnore
-	public String getVeterinarioParaFicha() {
-		String vetStr = "";
-		if (this.getVeterinario() != null) {
-			Veterinario vet = this.getVeterinario();
-			vetStr = String.format("Veterinario: %s %s", vet.getNombre(), vet.getApellido());
-		}
-		return vetStr;
 	}
 
 	@JsonIgnore

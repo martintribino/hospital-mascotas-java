@@ -3,6 +3,7 @@ package ttps.spring.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -31,15 +32,15 @@ public class Veterinario extends Persona {
 	@Column(name="domicilio_clinica")
 	private String domicilioClinica;
 	private Boolean validado;
-	@OneToMany(mappedBy="veterinario")
-	@JsonIgnore
-	private List<Mascota> mascotas;
-	@OneToMany(mappedBy="veterinario")
-	@JsonIgnore
-	private List<Solicitud> solicitudes;
-	@OneToMany(mappedBy="veterinario")
+	@OneToMany(mappedBy="veterinario", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private List<Evento> eventos;
+	@OneToMany(mappedBy="veterinario", cascade = CascadeType.ALL, orphanRemoval = false)
+	@JsonIgnore
+	private List<Mascota> mascotas;
+	@OneToMany(mappedBy="veterinario", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
+	private List<Solicitud> solicitudes;
 	
 	public Veterinario() {
 		super();
@@ -47,8 +48,8 @@ public class Veterinario extends Persona {
 		this.setDomicilioClinica("");
 		this.setValidado(false);
 		this.setEventos(new ArrayList<Evento>());
-		this.setMascotas(new ArrayList<Mascota>());
 		this.setSolicitudes(new ArrayList<Solicitud>());
+		this.setMascotas(new ArrayList<Mascota>());
 	}
 	
 	public Veterinario(PersonaReqBody p) {
@@ -66,8 +67,8 @@ public class Veterinario extends Persona {
 		this.setDomicilioClinica("");
 		this.setValidado(false);
 		this.setEventos(new ArrayList<Evento>());
-		this.setMascotas(new ArrayList<Mascota>());
 		this.setSolicitudes(new ArrayList<Solicitud>());
+		this.setMascotas(new ArrayList<Mascota>());
 	}
 	
 	public Veterinario(
@@ -97,7 +98,22 @@ public class Veterinario extends Persona {
 		this.setValidado(validado);
 		this.setEventos(new ArrayList<Evento>());
 		this.setMascotas(new ArrayList<Mascota>());
-		this.setSolicitudes(new ArrayList<Solicitud>());
+	}
+
+	public List<Solicitud> getSolicitudes() {
+		return solicitudes;
+	}
+
+	public void setSolicitudes(List<Solicitud> arrayList) {
+		this.solicitudes = arrayList;
+	}
+
+	public List<Evento> getEventos() {
+		return eventos;
+	}
+
+	public void setEventos(List<Evento> eventos) {
+		this.eventos = eventos;
 	}
 
 	public List<Mascota> getMascotas() {
@@ -108,12 +124,18 @@ public class Veterinario extends Persona {
 		this.mascotas = mascotas;
 	}
 
-	public List<Evento> getEventos() {
-		return eventos;
+	public void addMascota(Mascota mascota) {
+	    if (this.mascotas.contains(mascota))
+	        return ;
+	    this.mascotas.add(mascota);
+		mascota.setVeterinario(this);
 	}
 
-	public void setEventos(List<Evento> eventos) {
-		this.eventos = eventos;
+	public void removeMascota(Mascota mascota) {
+	    if (!mascotas.contains(mascota))
+	        return ;
+		this.mascotas.remove(mascota);
+		mascota.setVeterinario(null);
 	}
 
 	public String getDomicilioClinica() {
@@ -138,14 +160,6 @@ public class Veterinario extends Persona {
 
 	public void setNombreClinica(String nombreClinica) {
 		this.nombreClinica = nombreClinica;
-	}
-
-	public List<Solicitud> getSolicitudes() {
-		return solicitudes;
-	}
-
-	public void setSolicitudes(List<Solicitud> solicitudes) {
-		this.solicitudes = solicitudes;
 	}
 
 }

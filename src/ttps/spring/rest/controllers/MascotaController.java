@@ -225,12 +225,28 @@ public class MascotaController {
 		if (mascota == null) {
 	         throw new MascotaNotFoundException("No se encontró mascota.");
 		}
-		if(mascota.getDuenio().getId() != usu.getPersona().getId()) {
-	         throw new BadRequestException("Dueño no valido: " + userName);
+		Persona perfil = usu.getPersona();
+		if (perfil == null) {
+	         throw new UserNotFoundException("Perfil no encontrado." );
 	    }
 		try
 		{
-			mascotaService.eliminar(mascota.getId());
+			switch (perfil.getRole()) {
+			case "administrador":
+				mascotaService.eliminar(mascota.getId());
+			case "duenio":
+				if(mascota.getDuenio().getId() != usu.getPersona().getId()) {
+					throw new BadRequestException("Dueño no valido: " + userName);
+				}
+				mascotaService.eliminar(mascota.getId());
+				break;
+			case "veterinario":
+				//se borra la suscripcion unicamente
+				mascotaService.removerVeterinario(mascota);
+				break;
+			default:
+		        throw new BadRequestException("No role." );
+		}
 			return new ResponseEntity<Mascota>(HttpStatus.NO_CONTENT);
 		}
 		catch (Exception ex)

@@ -52,7 +52,15 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<ErrorResponse> handleMascotaNotFoundException(MascotaNotFoundException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
-        ErrorResponse error = new ErrorResponse("MAscota Not Found", details);
+        ErrorResponse error = new ErrorResponse("Mascota Not Found", details);
+        return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
+    }
+
+	@ExceptionHandler(SolicitudNotFoundException.class)
+    public final ResponseEntity<ErrorResponse> handleSolicitudNotFoundException(SolicitudNotFoundException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("Solicitud Not Found", details);
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
     }
 

@@ -198,7 +198,7 @@ public class MascotaTest {
 	public void getFichaPublica() {
 		m.habilitarVeterinario();
 		m.habilitarDuenio();
-		String str1 = m.getVeterinarioParaFicha() + m.getDuenioParaFicha();
+		String str1 = m.getDuenioParaFicha();
 		String str2 = m.getFichaPublica();
 		assertTrue("Probando getFichaPublica de clase Mascota", str1.equals(str2));
 	}

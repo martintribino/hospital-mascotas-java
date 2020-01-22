@@ -50,6 +50,16 @@ public class SolicitudService {
 	public void eliminar(long id) {
 		solicitudRepo.eliminar(id);
     }
+
+	//borra solicitud para un determinado veterinario
+	public void eliminarXVeterinario(Veterinario v) {
+		solicitudRepo.eliminarXVeterinario(v);
+    }
+
+	//borra solicitud para un determinado veterinario
+	public void eliminarXMascota(Mascota m) {
+		solicitudRepo.eliminarXMascota(m);
+    }
 	
 	//retorna una lista de todos las Solicitudes
 	public List<Solicitud> listar() {
@@ -64,6 +74,11 @@ public class SolicitudService {
 	//retorna una lista de todos las Solicitudes de un Veterinario
 	public List<Solicitud> listarXVeterinario(Veterinario v) {
         return solicitudRepo.recuperarSolicitudesPorVeterinario(v);
+    }
+	
+	//retorna una lista de todos las Solicitudes de un Veterinario
+	public List<Solicitud> listarXVeterinarioYEstado(Veterinario v, Solicitud.Estados e) {
+        return solicitudRepo.recuperarSolicitudesPorVeterinarioYEstado(v, e);
     }
 
 }

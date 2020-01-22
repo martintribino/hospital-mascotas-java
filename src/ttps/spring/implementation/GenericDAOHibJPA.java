@@ -16,9 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class GenericDAOHibJPA<T> implements Serializable, IGenericDAO<T> {
 
 	/**
-	 * Generic DAO implementation
+	 * GenericDAOHibJPA
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6813210425398282761L;
 	@PersistenceContext
 	private EntityManager entityManager;
 	private Class<T> entityClass;
@@ -51,6 +51,12 @@ public class GenericDAOHibJPA<T> implements Serializable, IGenericDAO<T> {
 	@Override
 	public T encontrar(Serializable id) {
 		T objReturn = (T) this.getEntityManager().find(this.entityClass, id);
+		return objReturn;
+	}
+
+	@Override
+	public T obtenerReferencia(Serializable id) {
+		T objReturn = (T) this.getEntityManager().getReference(this.entityClass, id);
 		return objReturn;
 	}
 

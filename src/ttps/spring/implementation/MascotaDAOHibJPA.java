@@ -2,12 +2,14 @@ package ttps.spring.implementation;
 
 import java.util.List;
 
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
 
 import ttps.spring.dao.IMascotaDAO;
 import ttps.spring.model.Mascota;
+import ttps.spring.model.Veterinario;
 
 @Repository
 public class MascotaDAOHibJPA extends GenericDAOHibJPA<Mascota>
@@ -47,11 +49,32 @@ public class MascotaDAOHibJPA extends GenericDAOHibJPA<Mascota>
 
 	@Override
 	public Mascota encontrar(String slug) {
+		Mascota m = null;
 		TypedQuery<Mascota> consulta = this.getEntityManager()
 				.createQuery("SELECT m from Mascota m WHERE m.slug = :slug", Mascota.class);
 		consulta.setParameter("slug", slug);
-		Mascota mascota = consulta.getSingleResult();
-		return mascota;
+		List<Mascota> mList = consulta.getResultList();
+		if (!mList.isEmpty()) {
+			m = mList.get(0);
+		}
+		return m;
+	}
+
+	@Override
+	public void agregarVeterinario(Mascota mascota, Veterinario veterinario) {
+		Query consulta = this.getEntityManager()
+				.createQuery("UPDATE Mascota m SET m.veterinario.id = :idVet WHERE m.id = :idMasc");
+		consulta.setParameter("idMasc", mascota.getId());
+		consulta.setParameter("idVet", veterinario.getId());
+		consulta.executeUpdate();
+	}
+
+	@Override
+	public void removerVeterinario(Mascota mascota) {
+		Query consulta = this.getEntityManager()
+				.createQuery("UPDATE Mascota m SET m.veterinario = NULL WHERE m.id = :idMasc");
+		consulta.setParameter("idMasc", mascota.getId());
+		consulta.executeUpdate();
 	}
 
 }

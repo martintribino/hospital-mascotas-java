@@ -19,6 +19,11 @@ public class VeterinarioService {
         return veterinarioRepository.encontrar(id);
     }
 
+	//retorna un Veterinario por id
+	public Veterinario obtenerReferencia(long id) {
+        return veterinarioRepository.obtenerReferencia(id);
+    }
+
 	//comprueba si existe un Veterinario
 	public Boolean existe(Veterinario vet) {
         return veterinarioRepository.existe(vet);

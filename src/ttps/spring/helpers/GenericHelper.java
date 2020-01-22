@@ -19,7 +19,7 @@ public class GenericHelper {
 
 	public static String slugToday() {
 		Date today = Calendar.getInstance().getTime();
-		Format formatter = new SimpleDateFormat("yyyy-D HH:mm:ss");
+		Format formatter = new SimpleDateFormat("yyyy-D HH:mm:ss.SSSXXX");
 		String s = formatter.format(today);
 		String slug = GenericHelper.toSlug(s);
 		return GenericHelper.toSlug(slug);
