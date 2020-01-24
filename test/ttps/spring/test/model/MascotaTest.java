@@ -165,9 +165,9 @@ public class MascotaTest {
 	@Test
 	public void testHabilitarSenias() {
 		m.habilitarSenias();
-        assertTrue("Probando habilitar Senias de clase Mascota", m.seniaEstaHabilitado());
+        assertTrue("Probando habilitar Senias de clase Mascota", m.seniasEstaHabilitado());
 		m.deshabilitarSenias();
-        assertFalse("Probando deshabilitar Senias de clase Mascota", m.seniaEstaHabilitado());
+        assertFalse("Probando deshabilitar Senias de clase Mascota", m.seniasEstaHabilitado());
 	}
 
 	@Test
@@ -192,15 +192,6 @@ public class MascotaTest {
         assertTrue("Probando habilitar Veterinario de clase Mascota", m.veterinarioEstaHabilitado());
 		m.deshabilitarVeterinario();
         assertFalse("Probando deshabilitar Veterinario de clase Mascota", m.veterinarioEstaHabilitado());
-	}
-
-	@Test
-	public void getFichaPublica() {
-		m.habilitarVeterinario();
-		m.habilitarDuenio();
-		String str1 = m.getDuenioParaFicha();
-		String str2 = m.getFichaPublica();
-		assertTrue("Probando getFichaPublica de clase Mascota", str1.equals(str2));
 	}
 
 }

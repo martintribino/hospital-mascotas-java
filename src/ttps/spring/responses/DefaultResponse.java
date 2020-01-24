@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 public class DefaultResponse implements Serializable {
 
 	/**
-	 * 
+	 * DefaultResponse
 	 */
 	private static final long serialVersionUID = 1L;
 

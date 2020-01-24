@@ -1,8 +1,6 @@
 package ttps.spring.model;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,7 +8,6 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -28,7 +26,6 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ttps.spring.helpers.GenericHelper;
 
@@ -39,19 +36,6 @@ public class Mascota implements Serializable {
 	 * Clase Mascota
 	 */
 	private static final long serialVersionUID = 263020006357396096L;
-
-	//Constantes para habilitar/deshabilitar metodos para mostrar en la ficha publica
-	@JsonIgnore
-	public static final String METODO_NOMBRE 	  = "getNombreParaFicha";
-	public static final String METODO_FECHA  	  = "getFechaNacimientoParaFicha";
-	public static final String METODO_ESPECIE 	  = "getEspecieParaFicha";
-	public static final String METODO_RAZA 		  = "getRazaParaFicha";
-	public static final String METODO_SEXO 		  = "getSexoParaFicha";
-	public static final String METODO_COLOR 	  = "getColorParaFicha";
-	public static final String METODO_SENIAS 	  = "getSeniasParaFicha";
-	public static final String METODO_IMAGEN 	  = "getImagenParaFicha";
-	public static final String METODO_DUENIO 	  = "getDuenioParaFicha";
-	public static final String METODO_VETERINARIO = "getVeterinarioParaFicha";
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@JsonIgnore
@@ -74,22 +58,25 @@ public class Mascota implements Serializable {
     @Past(message = "Por favor proporcione una fecha de nacimiento válida")
 	private Date fechaNacimiento;
 	private String imagen;
-	@Column(name="metodos_publicos")
-	@ElementCollection(targetClass=String.class, fetch = FetchType.EAGER)
-	@JsonProperty("metodos_publicos")
-	@JsonIgnore
-	private List<String> metodosPublicos;
+	@OneToOne(
+			optional = false,
+			fetch = FetchType.EAGER,
+			cascade = CascadeType.ALL,
+			orphanRemoval = true
+	)
+	private FichaPublica ficha;
 	@ManyToOne(optional = true)
 	@JoinColumn(name="duenio")
-	@JsonIgnore
 	private Duenio duenio;
 	@ManyToOne(optional = true)
 	@JoinColumn(name="veterinario")
-	@JsonIgnore
 	private Veterinario veterinario;
 	@OneToMany(mappedBy="mascota", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private List<Evento> eventos;
+	@OneToMany(mappedBy="mascota", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
+	private List<Solicitud> solicitudes;
 
 	public  Mascota() {
 		this.setNombre("");
@@ -101,13 +88,10 @@ public class Mascota implements Serializable {
 		this.setSexo("");
 		this.setImagen("");
 		this.setDuenio(null);
-		this.metodosPublicos = new ArrayList<String>();
 		this.generarSlug();
 		this.setEventos(new ArrayList<Evento>());
-		this.habilitarNombre();
-		this.habilitarEspecie();
-		this.habilitarRaza();
-		this.habilitarFecha();
+		this.setFicha(new FichaPublica());
+		this.setSolicitudes(new ArrayList<Solicitud>());
 	}
 
 	public  Mascota(
@@ -128,14 +112,11 @@ public class Mascota implements Serializable {
 		this.setColor(color);
 		this.setSexo(sexo);
 		this.setImagen(imagen);
-		this.metodosPublicos = new ArrayList<String>();
 		this.setDuenio(duenio);
 		this.setEventos(new ArrayList<Evento>());
 		this.generarSlug();
-		this.habilitarNombre();
-		this.habilitarEspecie();
-		this.habilitarRaza();
-		this.habilitarFecha();
+		this.setFicha(new FichaPublica());
+		this.setSolicitudes(new ArrayList<Solicitud>());
 	}
 
 	public  Mascota(
@@ -157,15 +138,11 @@ public class Mascota implements Serializable {
 		this.setColor(color);
 		this.setSexo(sexo);
 		this.setImagen(imagen);
-		this.metodosPublicos = new ArrayList<String>();
 		this.setDuenio(duenio);
 		this.setVeterinario(veterinario);
 		this.setEventos(new ArrayList<Evento>());
 		this.generarSlug();
-		this.habilitarNombre();
-		this.habilitarEspecie();
-		this.habilitarRaza();
-		this.habilitarFecha();
+		this.setFicha(new FichaPublica());
 	}
 
 	private void generarSlug() {
@@ -184,53 +161,80 @@ public class Mascota implements Serializable {
 		return slug;
 	}
 
+	public void setSlug(String slug) {
+		this.slug = slug;
+	}
+
 	public String getNombre() {
 		return nombre;
 	}
+
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+
 	public Date getFechaNacimiento() {
 		return fechaNacimiento;
 	}
+
 	public void setFechaNacimiento(Date fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
 	}
+
 	public String getEspecie() {
 		return especie;
 	}
+
 	public void setEspecie(String especie) {
 		this.especie = especie;
 	}
+
 	public String getRaza() {
 		return raza;
 	}
+
 	public void setRaza(String raza) {
 		this.raza = raza;
 	}
+
 	public String getSexo() {
 		return sexo;
 	}
+
 	public void setSexo(String sexo) {
 		this.sexo = sexo;
 	}
+
 	public String getColor() {
 		return color;
 	}
+
 	public void setColor(String color) {
 		this.color = color;
 	}
+
 	public String getSenias() {
 		return senias;
 	}
+
 	public void setSenias(String senias) {
 		this.senias = senias;
 	}
+
 	public String getImagen() {
 		return imagen;
 	}
+
 	public void setImagen(String imagen) {
 		this.imagen = imagen;
+	}
+
+	public FichaPublica getFicha() {
+		return ficha;
+	}
+
+	public void setFicha(FichaPublica ficha) {
+		this.ficha = ficha;
 	}
 
 	public Duenio getDuenio() {
@@ -257,202 +261,148 @@ public class Mascota implements Serializable {
 		this.eventos = eventos;
 	}
 
+	public List<Solicitud> getSolicitudes() {
+		return solicitudes;
+	}
+
+	public void setSolicitudes(List<Solicitud> solicitudes) {
+		this.solicitudes = solicitudes;
+	}
+
 	public void habilitarNombre() {
-		this.metodosPublicos.add(Mascota.METODO_NOMBRE);
+		this.ficha.setNombre(true);
 	}
 	
 	public void deshabilitarNombre() {
-		this.metodosPublicos.remove(Mascota.METODO_NOMBRE);
+		this.ficha.setNombre(false);
 	}
 	
 	public Boolean nombreEstaHabilitado() {
-		return this.metodosPublicos.contains(Mascota.METODO_NOMBRE);
-	}
-
-	@JsonIgnore
-	public String getNombreParaFicha() {
-		return "Nommbre: " + this.getNombre();
-	}
-
-	@JsonIgnore
-	public List<String> getMetodosPublicos() {
-		return metodosPublicos;
-	}
-
-	public void setMetodosPublicos(List<String> metodosPublicos) {
-		this.metodosPublicos = metodosPublicos;
+		return this.ficha.getNombre();
 	}
 	
 	public void habilitarFecha() {
-		this.metodosPublicos.add(Mascota.METODO_FECHA);
+		this.ficha.setFechaNacimiento(true);
 	}
 	
 	public void deshabilitarFecha() {
-		this.metodosPublicos.remove(Mascota.METODO_FECHA);
+		this.ficha.setFechaNacimiento(false);
 	}
 	
 	public Boolean fechaEstaHabilitado() {
-		return this.metodosPublicos.contains(Mascota.METODO_FECHA);
-	}
-
-	@JsonIgnore
-	public String getFechaNacimientoParaFicha(String nom) {
-		return "Fecha: " + this.getFechaNacimiento();
+		return this.ficha.getFechaNacimiento();
 	}
 	
 	public void habilitarEspecie() {
-		this.metodosPublicos.add(Mascota.METODO_ESPECIE);
+		this.ficha.setEspecie(true);
 	}
 	
 	public void deshabilitarEspecie() {
-		this.metodosPublicos.remove(Mascota.METODO_ESPECIE);
+		this.ficha.setEspecie(false);
 	}
 	
 	public Boolean especieEstaHabilitado() {
-		return this.metodosPublicos.contains(Mascota.METODO_ESPECIE);
-	}
-
-	@JsonIgnore
-	public String getEspecieParaFicha() {
-		return "Especie: " + this.getEspecie();
+		return this.ficha.getEspecie();
 	}
 	
 	public void habilitarRaza() {
-		this.metodosPublicos.add(Mascota.METODO_RAZA);
+		this.ficha.setRaza(true);
 	}
 	
 	public void deshabilitarRaza() {
-		this.metodosPublicos.remove(Mascota.METODO_RAZA);
+		this.ficha.setRaza(false);
 	}
 	
 	public Boolean razaEstaHabilitado() {
-		return this.metodosPublicos.contains(Mascota.METODO_RAZA);
-	}
-
-	@JsonIgnore
-	public String getRazaParaFicha() {
-		return "Raza: " + this.getRaza();
+		return this.ficha.getRaza();
 	}
 	
 	public void habilitarSexo() {
-		this.metodosPublicos.add(Mascota.METODO_SEXO);
+		this.ficha.setSexo(true);
 	}
 	
 	public void deshabilitarSexo() {
-		this.metodosPublicos.remove(Mascota.METODO_SEXO);
+		this.ficha.setSexo(false);
 	}
 	
 	public Boolean sexoEstaHabilitado() {
-		return this.metodosPublicos.contains(Mascota.METODO_SEXO);
-	}
-
-	@JsonIgnore
-	public String getSexoParaFicha() {
-		return "Sexo: " + this.getSexo();
+		return this.ficha.getSexo();
 	}
 	
 	public void habilitarColor() {
-		this.metodosPublicos.add(Mascota.METODO_COLOR);
+		this.ficha.setColor(true);
 	}
 	
 	public void deshabilitarColor() {
-		this.metodosPublicos.remove(Mascota.METODO_COLOR);
+		this.ficha.setColor(false);
 	}
 	
 	public Boolean colorEstaHabilitado() {
-		return this.metodosPublicos.contains(Mascota.METODO_COLOR);
-	}
-
-	@JsonIgnore
-	public String getColorParaFicha() {
-		return "Color: " + this.getColor();
+		return this.ficha.getColor();
 	}
 	
 	public void habilitarSenias() {
-		this.metodosPublicos.add(Mascota.METODO_SENIAS);
+		this.ficha.setSenias(true);
 	}
 	
 	public void deshabilitarSenias() {
-		this.metodosPublicos.remove(Mascota.METODO_SENIAS);
+		this.ficha.setSenias(false);
 	}
 	
-	public Boolean seniaEstaHabilitado() {
-		return this.metodosPublicos.contains(Mascota.METODO_SENIAS);
-	}
-
-	@JsonIgnore
-	public String getSeniasParaFicha() {
-		return "Señas: " + this.getSenias();
+	public Boolean seniasEstaHabilitado() {
+		return this.ficha.getSenias();
 	}
 	
 	public void habilitarImagen() {
-		this.metodosPublicos.add(Mascota.METODO_IMAGEN);
+		this.ficha.setImagen(true);
 	}
 	
 	public void deshabilitarImagen() {
-		this.metodosPublicos.remove(Mascota.METODO_IMAGEN);
+		this.ficha.setImagen(false);
 	}
 	
 	public Boolean imagenEstaHabilitado() {
-		return this.metodosPublicos.contains(Mascota.METODO_IMAGEN);
-	}
-
-	@JsonIgnore
-	public String getImagenParaFicha() {
-		String img = "";
-		if (this.getImagen() != null)
-			img = "Imagen: " + this.getImagen();
-		return img;
+		return this.ficha.getImagen();
 	}
 	
 	public void habilitarDuenio() {
-		this.metodosPublicos.add(Mascota.METODO_DUENIO);
+		this.ficha.setDuenio(true);
 	}
 	
 	public void deshabilitarDuenio() {
-		this.metodosPublicos.remove(Mascota.METODO_DUENIO);
+		this.ficha.setDuenio(false);
 	}
 	
 	public Boolean duenioEstaHabilitado() {
-		return this.metodosPublicos.contains(Mascota.METODO_DUENIO);
-	}
-
-	@JsonIgnore
-	public String getDuenioParaFicha() {
-		String duenioStr = "";
-		if (this.getDuenio() != null) {
-			duenio = this.getDuenio();
-			duenioStr = String.format("Dueño: %s %s", duenio.getNombre(), duenio.getApellido());
-		}
-		return duenioStr;
+		return this.ficha.getDuenio();
 	}
 	
 	public void habilitarVeterinario() {
-		this.metodosPublicos.add(Mascota.METODO_VETERINARIO);
+		this.ficha.setVeterinario(true);
 	}
 	
 	public void deshabilitarVeterinario() {
-		this.metodosPublicos.remove(Mascota.METODO_VETERINARIO);
+		this.ficha.setVeterinario(false);
 	}
 	
 	public Boolean veterinarioEstaHabilitado() {
-		return this.metodosPublicos.contains(Mascota.METODO_VETERINARIO);
+		return this.ficha.getVeterinario();
 	}
 
-	@JsonIgnore
-	public String getFichaPublica() {
-		String fichaPublica = "";
-		if(this.metodosPublicos.size() == 0)
-			return "No tiene";
-		for (String method : this.metodosPublicos) {
-			try {
-				Method met = Mascota.class.getMethod(method);
-				fichaPublica += met.invoke(this);
-			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
-		}
-		return fichaPublica;
+	public String getFichaPublicaSTR() {
+		String result = "";
+		String lineSep = System.lineSeparator();
+		result += this.nombreEstaHabilitado() ? "Nombre: " + this.getNombre() + lineSep : "";
+		result += this.especieEstaHabilitado() ? " Especie: " + this.getEspecie() + lineSep : "";
+		result += this.razaEstaHabilitado() ? " Raza: " + this.getNombre() + lineSep : "";
+		result += this.sexoEstaHabilitado() ? " Sexo: " + this.getSexo() + lineSep : "";
+		result += this.colorEstaHabilitado() ? " Color: " + this.getColor() + lineSep : "";
+		result += this.seniasEstaHabilitado() ? " Señas: " + this.getSenias() + lineSep : "";
+		result += this.fechaEstaHabilitado() ? " Fecha de Nacimiento: " + this.getFechaNacimiento() + lineSep : "";
+		result += this.imagenEstaHabilitado() ? " Imagen: " + this.getImagen() + lineSep : "";
+		result += this.duenioEstaHabilitado() && this.getDuenio() != null ? " Duenio: " + this.getDuenio().getNombre() + " " + this.getDuenio().getApellido() + lineSep : "";
+		result += this.veterinarioEstaHabilitado() && this.getVeterinario() != null ? " Veterinario: " + this.getVeterinario().getNombre() + " " + this.getVeterinario().getApellido() + lineSep : "";
+		return result;
 	}
 
 }

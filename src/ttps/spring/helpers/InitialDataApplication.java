@@ -160,19 +160,10 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 			log.info("------------------------------------");
 			log.info("Mascotas creados");
 			log.info("------------------------------------");
-		}
-		catch(Exception ex)
-		{
-			log.info("------------------------------------");
-			log.info("Mascotas existentes");
-			log.info("------------------------------------");
-		}
-		Solicitud s1 = new Solicitud();
-		s1.setMascota(m2);
-		s1.setVeterinario(v1);
-		// guardar solicitudes
-		try
-		{
+			// guardar solicitudes
+			Solicitud s1 = new Solicitud();
+			s1.setMascota(m2);
+			s1.setVeterinario(v1);
 			solRepository.guardar(s1);
 			log.info("------------------------------------");
 			log.info("Solicitudes creadas");
@@ -181,7 +172,7 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 		catch(Exception ex)
 		{
 			log.info("------------------------------------");
-			log.info("Solicitudes existentes");
+			log.info("Mascotas y Solicitudes existentes");
 			log.info("------------------------------------");
 		}
 	}

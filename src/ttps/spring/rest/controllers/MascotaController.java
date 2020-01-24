@@ -14,11 +14,14 @@ import ttps.spring.exceptions.BadRequestException;
 import ttps.spring.exceptions.MascotaNotFoundException;
 import ttps.spring.exceptions.UserNotFoundException;
 import ttps.spring.model.Duenio;
+import ttps.spring.model.FichaPublica;
 import ttps.spring.model.Mascota;
 import ttps.spring.model.Persona;
+import ttps.spring.model.QRCodeGenerator;
 import ttps.spring.model.Usuario;
 import ttps.spring.model.Veterinario;
 import ttps.spring.requests.MascotaReqBody;
+import ttps.spring.responses.ImageResponse;
 import ttps.spring.rest.services.DuenioService;
 import ttps.spring.rest.services.MascotaService;
 import ttps.spring.rest.services.UsuarioService;
@@ -33,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.codec.Base64;
 
 @RestController
 @RequestMapping
@@ -66,29 +70,60 @@ public class MascotaController {
 		}
 		List<Mascota> mascotasReturn = new ArrayList<Mascota>();
 		for (Mascota mascota: mascotas) {
+			FichaPublica f = mascota.getFicha();
 			Mascota aux = new Mascota();
-			aux.setNombre(mascota.getNombre());
-			if(mascota.especieEstaHabilitado())
+			aux.setSlug(mascota.getSlug());
+			if(f.getNombre())
+				aux.setNombre(mascota.getNombre());
+			if(f.getEspecie())
 				aux.setEspecie(mascota.getEspecie());
-			if(mascota.razaEstaHabilitado())
+			if(f.getRaza())
 				aux.setRaza(mascota.getRaza());
-			if(mascota.sexoEstaHabilitado())
+			if(f.getSexo())
 				aux.setSexo(mascota.getSexo());
-			if(mascota.colorEstaHabilitado())
+			if(f.getColor())
 				aux.setColor(mascota.getColor());
-			if(mascota.seniaEstaHabilitado())
+			if(f.getSenias())
 				aux.setSenias(mascota.getSenias());
-			if(mascota.fechaEstaHabilitado())
+			if(f.getFechaNacimiento())
 				aux.setFechaNacimiento(mascota.getFechaNacimiento());
-			if(mascota.imagenEstaHabilitado())
+			if(f.getImagen())
 				aux.setImagen(mascota.getImagen());
-			/*if(mascota.duenioEstaHabilitado())
+			if(mascota.getDuenio() != null && f.getDuenio())
 				aux.setDuenio(mascota.getDuenio());
-			if(mascota.veterinarioEstaHabilitado())
-				aux.setVeterinario(mascota.getVeterinario());*/
+			if(mascota.getVeterinario() != null && f.getVeterinario())
+				aux.setVeterinario(mascota.getVeterinario());
 			mascotasReturn.add(aux);
 		}
 		return new ResponseEntity<List<Mascota>>(mascotasReturn, HttpStatus.OK);
+	}
+
+	 //Recupero todas los mascotas pero solo las propiedades publicas
+	@GetMapping(value="/mascotas/qr/", produces={MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<ImageResponse> gettQRCode(
+			@RequestParam("slg") String slug
+		) throws Exception {
+		Mascota mascota = mascotaService.encontrar(slug);
+		if (mascota == null) {
+	         throw new MascotaNotFoundException("Mascota no encontrada." );
+	    }
+		try
+		{
+			int width = 300;
+			int height = 300;
+			String strQRCode = mascota.getFichaPublicaSTR();
+			byte[] base64 = Base64.encode(QRCodeGenerator.getQRCodeImage(strQRCode, width, height));
+			String qrstr = new String(base64);
+			ImageResponse ir = new ImageResponse();
+			ir.setQrcode(qrstr);
+			ir.setExtension("png");
+			ir.setWidth(width);
+			ir.setHeight(height);
+			return new ResponseEntity<ImageResponse>(ir, HttpStatus.OK);
+		}
+		catch (Exception e) {
+	        throw e;
+		}
 	}
 	
 	//retorna mascotas por duenio

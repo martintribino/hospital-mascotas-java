@@ -98,6 +98,7 @@ public class Veterinario extends Persona {
 		this.setValidado(validado);
 		this.setEventos(new ArrayList<Evento>());
 		this.setMascotas(new ArrayList<Mascota>());
+		this.setSolicitudes(new ArrayList<Solicitud>());
 	}
 
 	public List<Solicitud> getSolicitudes() {
