@@ -15,7 +15,9 @@ public class GenericHelper {
 	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
 	private static final Pattern EDGESDHASHES = Pattern.compile("(^-|-$)");
 
-	public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+	public static final String LOCALDATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+	public static final String LOCALDATE_FORMAT = "yyyy-MM-dd";
+	public static final String LOCALTIME_FORMAT = "HH:mm:ss";
 
 	public static String slugToday() {
 		Date today = Calendar.getInstance().getTime();

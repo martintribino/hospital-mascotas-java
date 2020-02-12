@@ -29,7 +29,7 @@ public class MascotaReqBody {
 	private String senias;
 	@Column(name="fecha_nacimiento")
 	@Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.DATE_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.LOCALDATETIME_FORMAT)
     @Past(message = "Por favor proporcione una fecha de nacimiento válida")
 	private Date fechaNacimiento;
 	private String imagen;

@@ -46,7 +46,7 @@ public class Solicitud implements Serializable {
 	@CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="fecha", updatable = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.DATE_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.LOCALDATETIME_FORMAT)
 	private Date fecha;
 	private Solicitud.Estados estado;
 	@ManyToOne(optional = true)

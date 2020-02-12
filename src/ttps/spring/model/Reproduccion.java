@@ -1,5 +1,7 @@
 package ttps.spring.model;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -12,9 +14,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @DiscriminatorValue("Reproduccion")
 public class Reproduccion extends Evento {
+
 	/**
 	 * Clase Reproduccion
 	 */
+	private static final long serialVersionUID = -2111217446201041768L;
 
 	@Column(name="fecha_parto")
 	@JsonProperty("fecha_parto")
@@ -30,14 +34,15 @@ public class Reproduccion extends Evento {
 	}
 
 	public Reproduccion(
-			Date fecha,
+			LocalDate fecha,
+			LocalTime inicio,
+			LocalTime fin,
 			String descripcion,
-			Boolean concurrio,
 			Veterinario veterinario,
 			Mascota mascota,
 			Date fechaParto,
 			int nroCachorros) {
-		super(fecha, descripcion, concurrio, veterinario, mascota);
+		super(fecha, inicio, fin, descripcion, veterinario, mascota);
 		this.setFechaParto(fechaParto);
 		this.setNroCachorros(nroCachorros);
 	}

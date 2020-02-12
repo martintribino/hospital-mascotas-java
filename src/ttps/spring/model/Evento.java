@@ -1,11 +1,14 @@
 package ttps.spring.model;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,22 +16,24 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.DiscriminatorType;
+import ttps.spring.helpers.GenericHelper;
 
 @Entity
 @Table(name="evento")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="tipo_evento", discriminatorType = DiscriminatorType.STRING)
-public class Evento {
+@DiscriminatorColumn(name="tipo_evento", length=20)
+public class Evento implements Serializable {
 
 	/**
 	 * Clase abstracta Evento
 	 */
+	private static final long serialVersionUID = 1222226124362981093L;
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@JsonIgnore
@@ -36,9 +41,17 @@ public class Evento {
 	@Column(name="tipo_evento", insertable = false, updatable = false)
 	@JsonProperty("tipo_evento")
 	private String tipoEvento;
-	private Date fecha;
+	@Column(name="slug", insertable = true, updatable = false, nullable = false)
+	private String slug;
 	private String descripcion;
-	private Boolean concurrio;
+	@JsonIgnore
+	@OneToOne(
+			optional = false,
+			fetch = FetchType.EAGER,
+			cascade = CascadeType.ALL,
+			orphanRemoval = true
+	)
+	private Turno turno;
 	@ManyToOne(optional = false)
 	@JoinColumn(name="veterinario_id")
 	@JsonIgnore
@@ -49,24 +62,29 @@ public class Evento {
 	private Mascota mascota;
 
 	public Evento() {
-		this.setFecha(Calendar.getInstance().getTime());
 		this.setDescripcion("");
-		this.setConcurrio(false);
 		this.setVeterinario(null);
 		this.setMascota(null);
+		this.generarSlug();
+		this.setTurno(new Turno());
 	}
 
 	public Evento(
-			Date fecha,
+			LocalDate fecha,
+			LocalTime inicio,
+			LocalTime fin,
 			String descripcion,
-			Boolean concurrio,
 			Veterinario veterinario,
 			Mascota mascota) {
-		this.setFecha(fecha);
 		this.setDescripcion(descripcion);
-		this.setConcurrio(concurrio);
 		this.setVeterinario(veterinario);
 		this.setMascota(mascota);
+		this.generarSlug();
+		this.setTurno(new Turno(fecha, inicio, fin, Turno.Estados.DISPONIBLE, this));
+	}
+
+	private void generarSlug() {
+		this.slug = GenericHelper.slugToday();
 	}
 	
 	public Long getId() {
@@ -77,12 +95,8 @@ public class Evento {
 		this.id = id;
 	}
 
-	public Date getFecha() {
-		return fecha;
-	}
-
-	public void setFecha(Date fecha) {
-		this.fecha = fecha;
+	public String getSlug() {
+		return slug;
 	}
 
 	public String getDescripcion() {
@@ -91,14 +105,6 @@ public class Evento {
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
-	}
-
-	public Boolean getConcurrio() {
-		return concurrio;
-	}
-
-	public void setConcurrio(Boolean concurrio) {
-		this.concurrio = concurrio;
 	}
 
 	public Veterinario getVeterinario() {
@@ -123,6 +129,14 @@ public class Evento {
 
 	public void setTipoEvento(String tipoEvento) {
 		this.tipoEvento = tipoEvento;
+	}
+
+	public Turno getTurno() {
+		return turno;
+	}
+
+	public void setTurno(Turno turno) {
+		this.turno = turno;
 	}
 
 }

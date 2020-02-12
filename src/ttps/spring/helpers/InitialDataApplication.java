@@ -1,5 +1,8 @@
 package ttps.spring.helpers;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,12 +17,17 @@ import org.springframework.stereotype.Component;
 
 import ttps.spring.dao.IAdministradorDAO;
 import ttps.spring.dao.IDuenioDAO;
+import ttps.spring.dao.IEventoDAO;
 import ttps.spring.dao.IMascotaDAO;
 import ttps.spring.dao.ISolicitudDAO;
+import ttps.spring.dao.IUsuarioDAO;
 import ttps.spring.dao.IVeterinarioDAO;
 import ttps.spring.model.Administrador;
 import ttps.spring.model.Duenio;
 import ttps.spring.model.Encrypt;
+import ttps.spring.model.Enfermedad;
+import ttps.spring.model.Evento;
+import ttps.spring.model.Intervencion;
 import ttps.spring.model.Mascota;
 import ttps.spring.model.Solicitud;
 import ttps.spring.model.Veterinario;
@@ -40,6 +48,10 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
     private IMascotaDAO mascRepository;
 	@Autowired
     private ISolicitudDAO solRepository;
+	@Autowired
+    private IUsuarioDAO usuRepository;
+	@Autowired
+    private IEventoDAO evRepository;
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -49,19 +61,21 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 				"admin", "Administrador", "Admin Ape", pass, "admin@admin.ad",
 				12365487, 123654, "Domicilio"
 			);
-		// guardar un administrador
-		try
-		{
-			adminRepository.guardar(a);
-			log.info("------------------------------------");
-			log.info("El Administrador fue creado");
-			log.info("------------------------------------");
-		}
-		catch(Exception ex)
-		{
-			log.info("------------------------------------");
-			log.info("El Administrador ya existe");
-			log.info("------------------------------------");
+		if(usuRepository.recuperarUsuarioPorNombre("admin") != null) {
+			// guardar un administrador
+			try
+			{
+				adminRepository.guardar(a);
+				log.info("------------------------------------");
+				log.info("El Administrador fue creado");
+				log.info("------------------------------------");
+			}
+			catch(Exception ex)
+			{
+				log.info("------------------------------------");
+				log.info("El Administrador ya existe");
+				log.info("------------------------------------");
+			}
 		}
 		pass = Encrypt.encode("vet123");
 		//veterinarios
@@ -74,10 +88,14 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 				"Domicilio", "Nombre clinica", "Domicilio Clinica", false
 			);
 		// guardar veterinarios
+		Boolean existeV1 = usuRepository.recuperarUsuarioPorNombre("vet1") == null;
+		Boolean existeV2 = usuRepository.recuperarUsuarioPorNombre("vet2") == null;
 		try
 		{
-			vetRepository.guardar(v1);
-			vetRepository.guardar(v2);
+			if(existeV1)
+				vetRepository.guardar(v1);
+			if(existeV2)
+				vetRepository.guardar(v2);
 			log.info("------------------------------------");
 			log.info("Veterinarios creados");
 			log.info("------------------------------------");
@@ -98,11 +116,15 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 				"due2", "Duenio 2", "Due2 Ape", pass, "due2@due.due", 15565387, 1288554,
 				"Domicilio2", new ArrayList<Mascota>()
 			);
+		Boolean existsDue1 = usuRepository.recuperarUsuarioPorNombre("due1") != null;
+		Boolean existsDue2 = usuRepository.recuperarUsuarioPorNombre("due2") != null;
 		// guardar duenios
 		try
 		{
-			dueRepository.guardar(d1);
-			dueRepository.guardar(d2);
+			if(!existsDue1)
+				dueRepository.guardar(d1);
+			if(!existsDue2)
+				dueRepository.guardar(d2);
 			log.info("------------------------------------");
 			log.info("Dueños creados");
 			log.info("------------------------------------");
@@ -114,66 +136,114 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 			log.info("------------------------------------");
 		}
 		Date today = Calendar.getInstance().getTime();
-		//Mascotas
-		Mascota m1 = new Mascota(
-				"Masc 1", today, "Pointer", "Pointer", "Masculino", "marrón",
-				"", "", d1
-			);
-		m1.setVeterinario(v1);
-		try {
-			TimeUnit.MILLISECONDS.sleep(200);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		today = Calendar.getInstance().getTime();
-		Mascota m2 = new Mascota(
-				"Masc 2", today, "Pointer2", "Pointer2", "Masculino", "marrón",
-				"", "", d1
-			);
-		try {
-			TimeUnit.MILLISECONDS.sleep(200);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		today = Calendar.getInstance().getTime();
-		Mascota m3 = new Mascota(
-				"Masc 3", today, "Salchicha", "Salchicha", "Femenino", "blanca",
-				"", "", d1
-			);
-		try {
-			TimeUnit.MILLISECONDS.sleep(200);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		today = Calendar.getInstance().getTime();
-		Mascota m4 = new Mascota(
-				"Masc 4", today, "Salchicha2", "Salchicha2", "Femenino", "negra",
-				"", "", d1
-			);
-		// guardar mascotas
-		try
-		{
-			mascRepository.guardar(m1);
-			mascRepository.guardar(m2);
-			mascRepository.guardar(m3);
-			mascRepository.guardar(m4);
-			log.info("------------------------------------");
-			log.info("Mascotas creados");
-			log.info("------------------------------------");
-			// guardar solicitudes
-			Solicitud s1 = new Solicitud();
-			s1.setMascota(m2);
-			s1.setVeterinario(v1);
-			solRepository.guardar(s1);
-			log.info("------------------------------------");
-			log.info("Solicitudes creadas");
-			log.info("------------------------------------");
-		}
-		catch(Exception ex)
-		{
-			log.info("------------------------------------");
-			log.info("Mascotas y Solicitudes existentes");
-			log.info("------------------------------------");
+		Boolean existsMasc1 = false;
+		if(!existsDue1 && !existsDue2) {
+			// Si due1 y due2 on habian sido creados
+			// guardar mascotas
+			//Mascotas
+			Mascota m1 = new Mascota(
+					"Masc 1", today, "Pointer", "Pointer", "Masculino", "marrón",
+					"", "", d1
+				);
+			m1.setVeterinario(v1);
+			try {
+				TimeUnit.MILLISECONDS.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			today = Calendar.getInstance().getTime();
+			Mascota m2 = new Mascota(
+					"Masc 2", today, "Pointer2", "Pointer2", "Masculino", "marrón",
+					"", "", d1
+				);
+			try {
+				TimeUnit.MILLISECONDS.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			today = Calendar.getInstance().getTime();
+			Mascota m3 = new Mascota(
+					"Masc 3", today, "Salchicha", "Salchicha", "Femenino", "blanca",
+					"", "", d1
+				);
+			try {
+				TimeUnit.MILLISECONDS.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			today = Calendar.getInstance().getTime();
+			Mascota m4 = new Mascota(
+					"Masc 4", today, "Salchicha2", "Salchicha2", "Femenino", "negra",
+					"", "", d1
+				);
+			try
+			{
+				mascRepository.guardar(m1);
+				existsMasc1 = true;
+				mascRepository.guardar(m2);
+				mascRepository.guardar(m3);
+				mascRepository.guardar(m4);
+				log.info("------------------------------------");
+				log.info("Mascotas creadas");
+				log.info("------------------------------------");
+				// guardar solicitudes
+				Solicitud s1 = new Solicitud();
+				s1.setMascota(m2);
+				s1.setVeterinario(v1);
+				solRepository.guardar(s1);
+				log.info("------------------------------------");
+				log.info("Solicitudes creadas");
+				log.info("------------------------------------");
+			}
+			catch(Exception ex)
+			{
+				log.info("------------------------------------");
+				log.info("Mascotas y Solicitudes existentes");
+				log.info("------------------------------------");
+			}
+			if(existsMasc1 && existeV1) {
+				LocalDate fecha = LocalDate.now();
+				LocalTime inicio = LocalTime.of(9, 30);
+				LocalTime fin = LocalTime.of(9, 59);
+				if(fecha.getDayOfWeek() == DayOfWeek.SUNDAY)
+					fecha.plusDays(1);
+				else if(fecha.getDayOfWeek() == DayOfWeek.SATURDAY)
+					fecha.plusDays(2);
+				Evento enf = new Enfermedad(
+						fecha, inicio, fin, "Enfermedad", v1, m1
+					);
+				try
+				{
+					evRepository.guardar(enf);
+					log.info("------------------------------------");
+					log.info("Enfermedad creada");
+					log.info("------------------------------------");
+				}
+				catch(Exception ex)
+				{
+					log.info("------------------------------------");
+					log.info("Enfermedad existente");
+					log.info("------------------------------------");
+				}
+				inicio = LocalTime.of(10, 00);
+				fin = LocalTime.of(10, 29);
+				Evento inter = new Intervencion(
+						fecha, inicio, fin, "Intervencion", v1, m1
+					);
+				try
+				{
+					evRepository.guardar(inter);
+					log.info("------------------------------------");
+					log.info("Intervencion creada");
+					log.info("------------------------------------");
+				}
+				catch(Exception ex)
+				{
+					log.info("------------------------------------");
+					log.info("Intervencion existente");
+					log.info("------------------------------------");
+				}
+			}
 		}
 	}
 

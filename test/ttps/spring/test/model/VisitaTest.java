@@ -2,10 +2,8 @@ package ttps.spring.test.model;
 
 import static org.junit.Assert.*;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import org.junit.Test;
 
@@ -15,19 +13,14 @@ public class VisitaTest {
 	private Visita v;
 	
 	public VisitaTest() {
-		v = new Visita();
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Date fecha;
-		try {
-			fecha = formatter.parse("2025-08-08");
-		}
-		catch(ParseException pe) {
-		    throw new IllegalArgumentException(pe);
-		}
+		LocalDate fecha = LocalDate.of(2025, 8, 8);
+		LocalTime inicio = LocalTime.of(9, 30);
+		LocalTime fin = LocalTime.of(10, 0);
 		v = new Visita(
 				fecha,
+				inicio,
+				fin,
 				"Vacuna",
-				true,
 				null,
 				null,
 				"droga",

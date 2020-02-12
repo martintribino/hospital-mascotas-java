@@ -16,7 +16,7 @@ public class SolicitudReqBody {
 	@Column(name="slug", insertable = true, updatable = false, nullable = false)
 	private String slug;
 	@Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.DATE_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.LOCALDATETIME_FORMAT)
 	private Date fecha;
 	private Solicitud.Estados estado;
 

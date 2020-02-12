@@ -32,6 +32,19 @@ public class EventoDAOHibJPA extends GenericDAOHibJPA<Evento>
 	}
 
 	@Override
+	public Evento encontrar(String slug) {
+		Evento f = null;
+		TypedQuery<Evento> consulta = this.getEntityManager()
+				.createQuery("SELECT e from Evento e WHERE e.slug = :slug", Evento.class);
+		consulta.setParameter("slug", slug);
+		List<Evento> mList = consulta.getResultList();
+		if (!mList.isEmpty()) {
+			f = mList.get(0);
+		}
+		return f;
+	}
+
+	@Override
 	public List<Visita> recuperarVisitas() {
 		TypedQuery<Visita> consulta = this.getEntityManager()
 				.createQuery("SELECT m FROM Evento m WHERE m.tipoEvento = 'Visita'", Visita.class);

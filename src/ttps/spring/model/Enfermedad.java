@@ -1,6 +1,7 @@
 package ttps.spring.model;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -8,21 +9,24 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue("Enfermedad")
 public class Enfermedad extends Evento {
+
 	/**
 	 * Clase Enfermedad
 	 */
+	private static final long serialVersionUID = -2596005362855999285L;
 
 	public Enfermedad() {
 		super();
 	}
 
 	public Enfermedad(
-			Date fecha,
+			LocalDate fecha,
+			LocalTime inicio,
+			LocalTime fin,
 			String descripcion,
-			Boolean concurrio,
 			Veterinario veterinario,
 			Mascota mascota) {
-		super(fecha, descripcion, concurrio, veterinario, mascota);
+		super(fecha, inicio, fin, descripcion, veterinario, mascota);
 	}
 
 }

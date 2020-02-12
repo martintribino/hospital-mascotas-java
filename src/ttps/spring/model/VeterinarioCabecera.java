@@ -48,12 +48,12 @@ public class VeterinarioCabecera implements Serializable {
 	@CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="fecha_creacion", updatable = false) 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.DATE_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.LOCALDATETIME_FORMAT)
 	private Date fechaCreacion;
 	@UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="fecha_actualizacion") 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.DATE_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.LOCALDATETIME_FORMAT)
 	private Date fechaActualizacion;
 	private VeterinarioCabecera.Estados estado;
 	@ManyToOne(optional = true)

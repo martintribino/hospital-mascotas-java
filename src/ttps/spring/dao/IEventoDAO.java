@@ -14,6 +14,7 @@ import ttps.spring.model.Veterinario;
 import ttps.spring.model.Visita;
 
 public interface IEventoDAO extends IGenericDAO<Evento> {
+	public Evento encontrar(String slug);
 	public List<Visita> recuperarVisitas();
 	public List<Visita> recuperarVisitasPorVeterinario(Veterinario v);
 	public List<Visita> recuperarVisitasPorMascota(Mascota m);
