@@ -18,11 +18,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import ttps.spring.helpers.GenericHelper;
 
 @Entity
 @Table(name="evento")
@@ -41,8 +40,7 @@ public class Evento implements Serializable {
 	@Column(name="tipo_evento", insertable = false, updatable = false)
 	@JsonProperty("tipo_evento")
 	private String tipoEvento;
-	@Column(name="slug", insertable = true, updatable = false, nullable = false)
-	private String slug;
+    @Size(min = 10, max = 100, message = "descripcion debe tener entre 10 y 100 caracteres")
 	private String descripcion;
 	@JsonIgnore
 	@OneToOne(
@@ -52,20 +50,14 @@ public class Evento implements Serializable {
 			orphanRemoval = true
 	)
 	private Turno turno;
-	@ManyToOne(optional = false)
-	@JoinColumn(name="veterinario_id")
 	@JsonIgnore
-	private Veterinario veterinario;
 	@ManyToOne(optional = false)
 	@JoinColumn(name="mascota_id")
-	@JsonIgnore
 	private Mascota mascota;
 
 	public Evento() {
-		this.setDescripcion("");
-		this.setVeterinario(null);
+		this.setDescripcion("Descripcion Evento");
 		this.setMascota(null);
-		this.generarSlug();
 		this.setTurno(new Turno());
 	}
 
@@ -74,17 +66,10 @@ public class Evento implements Serializable {
 			LocalTime inicio,
 			LocalTime fin,
 			String descripcion,
-			Veterinario veterinario,
 			Mascota mascota) {
 		this.setDescripcion(descripcion);
-		this.setVeterinario(veterinario);
 		this.setMascota(mascota);
-		this.generarSlug();
-		this.setTurno(new Turno(fecha, inicio, fin, Turno.Estados.DISPONIBLE, this));
-	}
-
-	private void generarSlug() {
-		this.slug = GenericHelper.slugToday();
+		this.setTurno(new Turno(fecha, inicio, fin, Turno.Estados.RESERVADO, this));
 	}
 	
 	public Long getId() {
@@ -95,24 +80,12 @@ public class Evento implements Serializable {
 		this.id = id;
 	}
 
-	public String getSlug() {
-		return slug;
-	}
-
 	public String getDescripcion() {
 		return descripcion;
 	}
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
-	}
-
-	public Veterinario getVeterinario() {
-		return veterinario;
-	}
-
-	public void setVeterinario(Veterinario veterinario) {
-		this.veterinario = veterinario;
 	}
 
 	public Mascota getMascota() {

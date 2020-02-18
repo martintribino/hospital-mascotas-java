@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import ttps.spring.model.Evento;
 import ttps.spring.model.Mascota;
-import ttps.spring.model.Veterinario;
 
 public class EventoTest {
 	private Evento e;
@@ -20,13 +19,6 @@ public class EventoTest {
 		String desc = "Descripcion";
 		e.setDescripcion(desc);
         assertEquals("Probando propiedad descripcion de clase Evento", desc, e.getDescripcion());
-	}
-
-	@Test
-	public void testSetVeterinario() {
-		Veterinario v = new Veterinario();
-		e.setVeterinario(v);
-        assertEquals("Probando propiedad veterinario de clase Evento", v, e.getVeterinario());
 	}
 
 	@Test

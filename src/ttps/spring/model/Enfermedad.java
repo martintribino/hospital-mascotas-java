@@ -24,9 +24,8 @@ public class Enfermedad extends Evento {
 			LocalTime inicio,
 			LocalTime fin,
 			String descripcion,
-			Veterinario veterinario,
 			Mascota mascota) {
-		super(fecha, inicio, fin, descripcion, veterinario, mascota);
+		super(fecha, inicio, fin, descripcion, mascota);
 	}
 
 }

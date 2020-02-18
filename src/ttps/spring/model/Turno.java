@@ -3,6 +3,7 @@ package ttps.spring.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,17 +38,28 @@ public class Turno implements Serializable {
 	
 	//constantes
 	public static final int TURNO = 30;
+	public static final LocalDate VALID_DATE_INICIO = LocalDate.of(2000, 1, 1);
+	public static final LocalDate VALID_DATE_FIN = LocalDate.now().plusYears(1);
 	public static final LocalTime HORARIO_INICIO = LocalTime.of(9, 00);
 	public static final LocalTime HORARIO_FIN = LocalTime.of(18, 00);
 	public static enum Estados {
-		CANCELADO, //cancelado
-		CONCURRIO, //para consltar historial
+		CANCELADO, //habia sido reservado y fue cancelado, aun no transcurrio la fecha
+		CONCURRIO, //para consltar historial, transcurrio la fecha
 		DISPONIBLE, //disponible y aun no transcurrio la fecha
 		INACTIVO, //ya transcurrio la fecha
-		NOCONCURRIO, //para consltar historial
-		NODISPONIBLE, //no disponible porque ya transcurrio la fecha
+		NOCONCURRIO, //se reservo y no concurrio, transcurrio la fecha
+		NODISPONIBLE, //no se reservo y transcurrio la fecha
 		RESERVADO, //reservado y aun no transcurrio la fecha
-	}
+	};
+	public static final Map<Estados, Estados> FPMUT = Map.of(
+			Estados.CANCELADO, Estados.CANCELADO,
+			Estados.CONCURRIO, Estados.CONCURRIO,
+			Estados.DISPONIBLE, Estados.NODISPONIBLE,
+			Estados.INACTIVO, Estados.INACTIVO,
+			Estados.NOCONCURRIO, Estados.NOCONCURRIO,
+			Estados.NODISPONIBLE, Estados.NODISPONIBLE,
+			Estados.RESERVADO, Estados.CONCURRIO
+	);
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@JsonIgnore
 	private Long id;
@@ -67,6 +79,7 @@ public class Turno implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.LOCALTIME_FORMAT)
 	private LocalTime fin;
 	private Turno.Estados estado;
+	@JsonIgnore
 	@OneToOne(mappedBy="turno")
 	private Evento evento;
 
@@ -157,6 +170,13 @@ public class Turno implements Serializable {
 		return (this.fecha.isEqual(t.fecha)) &&
 				(!this.inicio.isAfter(t.fin)) &&
 				(!t.inicio.isAfter(this.fin));
+	}
+
+	public Boolean isValid() {
+		return (this.fecha.isAfter(VALID_DATE_INICIO) &&
+				this.fecha.isBefore(VALID_DATE_FIN) &&
+				this.getInicio().isBefore(this.getFin()) &&
+				this.inicio.plusMinutes(TURNO - 1).equals(this.fin));
 	}
 
 }

@@ -29,11 +29,10 @@ public class Desparasitacion extends Evento {
 			LocalTime inicio,
 			LocalTime fin,
 			String descripcion,
-			Veterinario veterinario,
 			Mascota mascota,
 			String droga,
 			String resultado) {
-		super(fecha, inicio, fin, descripcion, veterinario, mascota);
+		super(fecha, inicio, fin, descripcion, mascota);
 		this.setDroga(droga);
 		this.setResultado(resultado);
 	}

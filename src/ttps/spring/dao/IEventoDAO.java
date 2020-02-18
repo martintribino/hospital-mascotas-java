@@ -1,5 +1,6 @@
 package ttps.spring.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import ttps.spring.dao.IGenericDAO;
@@ -31,9 +32,9 @@ public interface IEventoDAO extends IGenericDAO<Evento> {
 	public List<Desparasitacion> recuperarDesparasitacionesPorMascota(Mascota m);
 	public List<Desparasitacion> recuperarDesparasitacionesPorVeterinario(Veterinario v);
 	public List<Evento> recuperarEventos();
+	public List<Evento> recuperarEventosXFecha(LocalDate fecha);
 	public List<Enfermedad> recuperarEnfermedades();
 	public List<Enfermedad> recuperarEnfermedadesPorMascota(Mascota m);
 	public List<Enfermedad> recuperarEnfermedadesPorVeterinario(Veterinario v);
 	public Mascota recuperarMascota(Evento e);
-	public Veterinario recuperarVeterinario(Evento e);
 }

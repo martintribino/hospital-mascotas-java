@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -74,6 +76,95 @@ public class HorariosResponse implements Serializable {
 								LocalTime.of(hora, minuto + this.turno - 1),
 								estado
 						));
+					}
+				}
+			}
+		}
+	}
+
+	public HorariosResponse(LocalDate fecha, List<Turno> turnos) {
+		this.turno = Turno.TURNO;
+		this.inicio = Turno.HORARIO_INICIO;
+		this.fin = Turno.HORARIO_FIN;
+		this.setEstados(Estados.values());
+		this.turnosValidos = new ArrayList<Turno>();
+		if(this.turno > 0 && this.fin.isAfter(this.inicio)) {
+			LocalDate now = LocalDate.now();
+			// La fecha es disponible mientras la fecha sea mayor a la actual o
+			// igual y el tiempo mayor al actual
+			Estados estado = Estados.DISPONIBLE;
+			Map<LocalTime,Turno> trnsMap =
+					turnos.stream().collect(Collectors.toMap(Turno::getInicio, turno -> turno));
+			if (fecha.isBefore(now)) {
+				//pasado
+				estado = Estados.NODISPONIBLE;
+				for (int hora = this.getInicio().getHour(); hora <= this.getFin().getHour(); hora++ ) {
+					for (int minuto = 0; minuto < 60; minuto += this.turno) {
+						LocalTime tiempoInicio = LocalTime.of(hora, minuto);
+						LocalTime tiempoFin = LocalTime.of(hora, minuto + this.turno - 1);
+						Turno trn = trnsMap.get(tiempoInicio);
+						if (trn != null) {
+							if (Turno.FPMUT.containsKey(trn.getEstado())) {
+								trn.setEstado(Turno.FPMUT.getOrDefault(trn.getEstado(), estado));
+							}
+							this.turnosValidos.add(trn);
+						} else {
+							this.turnosValidos.add(new Turno(
+									fecha,
+									tiempoInicio,
+									tiempoFin,
+									estado
+							));
+						}
+					}
+				}
+			} else if (fecha.isAfter(now)) {
+				//futuro
+				estado = Estados.DISPONIBLE;
+				for (int hora = this.getInicio().getHour(); hora <= this.getFin().getHour(); hora++ ) {
+					for (int minuto = 0; minuto < 60; minuto += this.turno) {
+						LocalTime tiempoInicio = LocalTime.of(hora, minuto);
+						LocalTime tiempoFin = LocalTime.of(hora, minuto + this.turno - 1);
+						Turno trn = trnsMap.get(tiempoInicio);
+						if (trn != null) {
+							this.turnosValidos.add(trn);
+						} else {
+							this.turnosValidos.add(new Turno(
+									fecha,
+									tiempoInicio,
+									tiempoFin,
+									estado
+							));
+						}
+					}
+				}
+			} else {
+				//hoy
+				LocalTime tiempoNow = LocalTime.now();
+				for (int hora = this.getInicio().getHour(); hora <= this.getFin().getHour(); hora++ ) {
+					for (int minuto = 0; minuto < 60; minuto += this.turno) {
+						LocalTime tiempoInicio = LocalTime.of(hora, minuto);
+						LocalTime tiempoFin = LocalTime.of(hora, minuto + this.turno - 1);
+						Boolean paso = tiempoNow.isAfter(tiempoInicio);
+						if (paso) {
+							estado = Estados.NODISPONIBLE;
+						} else {
+							estado = Estados.DISPONIBLE;
+						}
+						Turno trn = trnsMap.get(tiempoInicio);
+						if (trn != null) {
+							if (paso && Turno.FPMUT.containsKey(trn.getEstado())) {
+								trn.setEstado(Turno.FPMUT.getOrDefault(trn.getEstado(), estado));
+							}
+							this.turnosValidos.add(trn);
+						} else {
+							this.turnosValidos.add(new Turno(
+									fecha,
+									tiempoInicio,
+									tiempoFin,
+									estado
+							));
+						}
 					}
 				}
 			}

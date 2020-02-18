@@ -38,11 +38,10 @@ public class Reproduccion extends Evento {
 			LocalTime inicio,
 			LocalTime fin,
 			String descripcion,
-			Veterinario veterinario,
 			Mascota mascota,
 			Date fechaParto,
 			int nroCachorros) {
-		super(fecha, inicio, fin, descripcion, veterinario, mascota);
+		super(fecha, inicio, fin, descripcion, mascota);
 		this.setFechaParto(fechaParto);
 		this.setNroCachorros(nroCachorros);
 	}

@@ -33,14 +33,13 @@ public class Visita extends Evento {
 			LocalTime inicio,
 			LocalTime fin,
 			String descripcion,
-			Veterinario veterinario,
 			Mascota mascota,
 			String droga,
 			String peso,
 			String motivo,
 			String diagnostico,
 			String indicaciones) {
-		super(fecha, inicio, fin, descripcion, veterinario, mascota);
+		super(fecha, inicio, fin, descripcion, mascota);
 		this.setPeso(peso);
 		this.setMotivo(motivo);
 		this.setDiagnostico(diagnostico);

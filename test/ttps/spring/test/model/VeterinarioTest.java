@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import ttps.spring.model.Evento;
 import ttps.spring.model.Solicitud;
 import ttps.spring.model.Veterinario;
 
@@ -44,7 +43,6 @@ public class VeterinarioTest {
         assertEquals("Veterinario", vet.getNombre());
         assertEquals(123654789, vet.getTelefono());
         assertEquals("Probando constructor de clase Veterinario con parámetros", Veterinario.class, vet.getClass());
-        assertEquals("Probando propiedad eventos de clase Veterinario", new ArrayList<Evento>(), vet.getEventos());
         assertEquals("Probando propiedad solicitudes de clase Veterinario", new ArrayList<Solicitud>(), vet.getSolicitudes());
 	}
 

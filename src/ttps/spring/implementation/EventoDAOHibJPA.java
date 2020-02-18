@@ -1,23 +1,28 @@
 package ttps.spring.implementation;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import ttps.spring.dao.IEventoDAO;
+import ttps.spring.exceptions.TurnoNoValidoException;
 import ttps.spring.model.Desparasitacion;
 import ttps.spring.model.Enfermedad;
 import ttps.spring.model.Evento;
 import ttps.spring.model.Intervencion;
 import ttps.spring.model.Mascota;
 import ttps.spring.model.Reproduccion;
+import ttps.spring.model.Turno;
 import ttps.spring.model.Vacuna;
 import ttps.spring.model.Veterinario;
 import ttps.spring.model.Visita;
 
 @Repository
+@Transactional
 public class EventoDAOHibJPA extends GenericDAOHibJPA<Evento>
 							 implements IEventoDAO {
 
@@ -205,18 +210,32 @@ public class EventoDAOHibJPA extends GenericDAOHibJPA<Evento>
 	}
 
 	@Override
-	public Veterinario recuperarVeterinario(Evento e) {
-		Veterinario v = null;
-		if(e.getVeterinario() != null) {
-			TypedQuery<Veterinario> consulta = this.getEntityManager()
-					.createQuery("SELECT v FROM Veterinario v WHERE v.id = :veterinarioId", Veterinario.class);
-			consulta.setParameter("veterinarioId", e.getVeterinario().getId());
-			List<Veterinario> vList = (List<Veterinario>) consulta.getResultList();
-			if (vList.size() == 1) {
-				v = vList.get(0);
-			}
-		}
-		return v;
+	public List<Evento> recuperarEventosXFecha(LocalDate fecha) {
+		TypedQuery<Evento> consulta = this.getEntityManager()
+				.createQuery("SELECT e FROM Evento e WHERE e.turno.fecha  = :fechaParam", Evento.class);
+		consulta.setParameter("fechaParam", fecha);
+		return (List<Evento>) consulta.getResultList();
+	}
+
+	private Boolean estaDisponible(Turno turno) {
+		System.out.println("id: "+turno.getId());
+		System.out.println("inicio: "+turno.getInicio().plusMinutes(Turno.TURNO - 1));
+		System.out.println("fin: "+turno.getFin());
+		TypedQuery<Turno> consulta = this.getEntityManager()
+				.createQuery("SELECT t from Turno t WHERE (t.fecha = :tfecha and NOT (t.inicio > :tfin) and NOT (:tinicio > t.fin))", Turno.class);
+		consulta.setParameter("tfecha", turno.getFecha());
+		consulta.setParameter("tinicio", turno.getInicio());
+		consulta.setParameter("tfin", turno.getFin());
+		List<Turno> trns = consulta.getResultList();
+		return trns.isEmpty() && turno.isValid();
+	}
+
+	@Override
+	public Evento guardar(Evento ev) {
+		if (this.estaDisponible(ev.getTurno())) {
+			return super.guardar(ev);
+		} else
+	        throw new TurnoNoValidoException("Turno no válido." );
 	}
 
 }

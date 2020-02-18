@@ -27,7 +27,6 @@ public class VacunaTest {
 				inicio,
 				fin,
 				"Vacuna",
-				null,
 				null);
         assertEquals("Probando constructor de clase Vacuna con parámetros", Vacuna.class, v.getClass());
 	}

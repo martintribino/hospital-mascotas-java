@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -40,7 +41,7 @@ public class Mascota implements Serializable {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@JsonIgnore
 	private Long id;
-	@Column(name="slug", insertable = true, updatable = false, nullable = false)
+	@Column(name="slug", insertable = true, updatable = false, nullable = false, unique = true, length = 50)
 	private String slug;
     @Size(min = 2, max = 40, message = "nombre debe tener entre 2 y 40 caracteres")
 	private String nombre;
@@ -79,6 +80,8 @@ public class Mascota implements Serializable {
 	private List<Solicitud> solicitudes;
 
 	public  Mascota() {
+		UUID uuid = UUID.randomUUID();
+		this.setSlug(uuid.toString());
 		this.setNombre("");
 		this.setFechaNacimiento(Calendar.getInstance().getTime());
 		this.setEspecie("");
@@ -88,7 +91,6 @@ public class Mascota implements Serializable {
 		this.setSexo("");
 		this.setImagen("");
 		this.setDuenio(null);
-		this.generarSlug();
 		this.setEventos(new ArrayList<Evento>());
 		this.setFicha(new FichaPublica());
 		this.setSolicitudes(new ArrayList<Solicitud>());
@@ -104,6 +106,8 @@ public class Mascota implements Serializable {
 			String senias,
 			String imagen,
 			Duenio duenio) {
+		UUID uuid = UUID.randomUUID();
+		this.setSlug(uuid.toString());
 		this.setNombre(nombre);
 		this.setFechaNacimiento(fechaNacimiento);
 		this.setEspecie(especie);
@@ -114,7 +118,6 @@ public class Mascota implements Serializable {
 		this.setImagen(imagen);
 		this.setDuenio(duenio);
 		this.setEventos(new ArrayList<Evento>());
-		this.generarSlug();
 		this.setFicha(new FichaPublica());
 		this.setSolicitudes(new ArrayList<Solicitud>());
 	}
@@ -130,6 +133,8 @@ public class Mascota implements Serializable {
 			String imagen,
 			Duenio duenio,
 			Veterinario veterinario) {
+		UUID uuid = UUID.randomUUID();
+		this.setSlug(uuid.toString());
 		this.setNombre(nombre);
 		this.setFechaNacimiento(fechaNacimiento);
 		this.setEspecie(especie);
@@ -141,12 +146,7 @@ public class Mascota implements Serializable {
 		this.setDuenio(duenio);
 		this.setVeterinario(veterinario);
 		this.setEventos(new ArrayList<Evento>());
-		this.generarSlug();
 		this.setFicha(new FichaPublica());
-	}
-
-	private void generarSlug() {
-		this.slug = GenericHelper.slugToday();
 	}
 
 	public Long getId() {

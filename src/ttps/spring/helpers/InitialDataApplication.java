@@ -29,8 +29,12 @@ import ttps.spring.model.Enfermedad;
 import ttps.spring.model.Evento;
 import ttps.spring.model.Intervencion;
 import ttps.spring.model.Mascota;
+import ttps.spring.model.Reproduccion;
 import ttps.spring.model.Solicitud;
+import ttps.spring.model.Turno;
+import ttps.spring.model.Vacuna;
 import ttps.spring.model.Veterinario;
+import ttps.spring.model.Visita;
 
 
 @Component
@@ -202,15 +206,26 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 				log.info("------------------------------------");
 			}
 			if(existsMasc1 && existeV1) {
-				LocalDate fecha = LocalDate.now();
+				LocalDate fechaAyer;
+				LocalDate fecha;
+				LocalDate fechaMañana;
 				LocalTime inicio = LocalTime.of(9, 30);
 				LocalTime fin = LocalTime.of(9, 59);
-				if(fecha.getDayOfWeek() == DayOfWeek.SUNDAY)
-					fecha.plusDays(1);
-				else if(fecha.getDayOfWeek() == DayOfWeek.SATURDAY)
-					fecha.plusDays(2);
+				if(LocalDate.now().getDayOfWeek() == DayOfWeek.SUNDAY) {
+					fechaAyer = LocalDate.now().minusDays(2);
+					fecha = LocalDate.now().plusDays(1);
+					fechaMañana = LocalDate.now().plusDays(2);
+				} else if(LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY) {
+					fechaAyer = LocalDate.now().minusDays(1);
+					fecha = LocalDate.now().plusDays(2);
+					fechaMañana = LocalDate.now().plusDays(3);
+				} else {
+					fecha = LocalDate.now();
+					fechaAyer = LocalDate.now().minusDays(1);
+					fechaMañana = LocalDate.now().plusDays(1);
+				}
 				Evento enf = new Enfermedad(
-						fecha, inicio, fin, "Enfermedad", v1, m1
+						fecha, inicio, fin, "Enfermedad", m1
 					);
 				try
 				{
@@ -228,7 +243,7 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 				inicio = LocalTime.of(10, 00);
 				fin = LocalTime.of(10, 29);
 				Evento inter = new Intervencion(
-						fecha, inicio, fin, "Intervencion", v1, m1
+						fecha, inicio, fin, "Intervencion",  m1
 					);
 				try
 				{
@@ -241,6 +256,78 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 				{
 					log.info("------------------------------------");
 					log.info("Intervencion existente");
+					log.info("------------------------------------");
+				}
+				Reproduccion rep = new Reproduccion(
+						fechaMañana, inicio, fin, "Reproduccion", m1, new Date(),2
+					);
+				try
+				{
+					evRepository.guardar(rep);
+					log.info("------------------------------------");
+					log.info("Reproduccion creada");
+					log.info("------------------------------------");
+				}
+				catch(Exception ex)
+				{
+					log.info("------------------------------------");
+					log.info("Reproduccion existente");
+					log.info("------------------------------------");
+				}
+				inicio = LocalTime.of(11, 00);
+				fin = LocalTime.of(11, 29);
+				Vacuna vacuna = new Vacuna(
+						fechaMañana, inicio, fin, "Vacuna numero 1", m1
+					);
+				try
+				{
+					evRepository.guardar(vacuna);
+					log.info("------------------------------------");
+					log.info("Vacuna creada");
+					log.info("------------------------------------");
+				}
+				catch(Exception ex)
+				{
+					log.info("------------------------------------");
+					log.info("Vacuna existente");
+					log.info("------------------------------------");
+				}
+				Vacuna vacuna2 = new Vacuna(
+						fechaAyer, inicio, fin, "Vacuna numero 2", m1
+					);
+				if (vacuna2 != null && vacuna2.getTurno() != null )
+					vacuna2.getTurno().setEstado(Turno.Estados.NOCONCURRIO);
+				try
+				{
+					evRepository.guardar(vacuna2);
+					log.info("------------------------------------");
+					log.info("Vacuna 2 creada");
+					log.info("------------------------------------");
+				}
+				catch(Exception ex)
+				{
+					log.info("------------------------------------");
+					log.info("Vacuna 2 existente");
+					log.info("------------------------------------");
+				}
+				inicio = LocalTime.of(11, 30);
+				fin = LocalTime.of(11, 59);
+				Visita visita = new Visita(
+						fechaAyer, inicio, fin, "Visita nro 1", m1, "groga", "peso", "motivo", "diag", "ind"
+					);
+				if (visita != null && visita.getTurno() != null )
+					visita.getTurno().setEstado(Turno.Estados.CANCELADO);
+				try
+				{
+					evRepository.guardar(visita);
+					log.info("------------------------------------");
+					log.info("Visita creada");
+					log.info("------------------------------------");
+				}
+				catch(Exception ex)
+				{
+					log.info("------------------------------------");
+					log.info("Visita existente");
 					log.info("------------------------------------");
 				}
 			}

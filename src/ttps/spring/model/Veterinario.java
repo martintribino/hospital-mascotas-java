@@ -32,9 +32,6 @@ public class Veterinario extends Persona {
 	@Column(name="domicilio_clinica")
 	private String domicilioClinica;
 	private Boolean validado;
-	@OneToMany(mappedBy="veterinario", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnore
-	private List<Evento> eventos;
 	@OneToMany(mappedBy="veterinario", cascade = CascadeType.ALL, orphanRemoval = false)
 	@JsonIgnore
 	private List<Mascota> mascotas;
@@ -47,7 +44,6 @@ public class Veterinario extends Persona {
 		this.setNombreClinica("");
 		this.setDomicilioClinica("");
 		this.setValidado(false);
-		this.setEventos(new ArrayList<Evento>());
 		this.setSolicitudes(new ArrayList<Solicitud>());
 		this.setMascotas(new ArrayList<Mascota>());
 	}
@@ -66,7 +62,6 @@ public class Veterinario extends Persona {
 		this.setNombreClinica("");
 		this.setDomicilioClinica("");
 		this.setValidado(false);
-		this.setEventos(new ArrayList<Evento>());
 		this.setSolicitudes(new ArrayList<Solicitud>());
 		this.setMascotas(new ArrayList<Mascota>());
 	}
@@ -96,7 +91,6 @@ public class Veterinario extends Persona {
 		this.setNombreClinica(nombreClinica);
 		this.setDomicilioClinica(domicilioClinica);
 		this.setValidado(validado);
-		this.setEventos(new ArrayList<Evento>());
 		this.setMascotas(new ArrayList<Mascota>());
 		this.setSolicitudes(new ArrayList<Solicitud>());
 	}
@@ -107,14 +101,6 @@ public class Veterinario extends Persona {
 
 	public void setSolicitudes(List<Solicitud> arrayList) {
 		this.solicitudes = arrayList;
-	}
-
-	public List<Evento> getEventos() {
-		return eventos;
-	}
-
-	public void setEventos(List<Evento> eventos) {
-		this.eventos = eventos;
 	}
 
 	public List<Mascota> getMascotas() {

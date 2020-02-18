@@ -6,6 +6,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import ttps.spring.dao.ISolicitudDAO;
 import ttps.spring.model.Mascota;
@@ -13,6 +14,7 @@ import ttps.spring.model.Solicitud;
 import ttps.spring.model.Veterinario;
 
 @Repository
+@Transactional
 public class SolicitudDAOHibJPA extends GenericDAOHibJPA<Solicitud>
 								implements ISolicitudDAO {
 

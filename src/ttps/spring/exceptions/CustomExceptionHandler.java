@@ -80,6 +80,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
     }
 
+	@ExceptionHandler(TurnoNoValidoException.class)
+    public final ResponseEntity<ErrorResponse> handleTurnoNoValidoException(TurnoNoValidoException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("Not Valid Shift.", details);
+        return new ResponseEntity<ErrorResponse>(error, HttpStatus.CONFLICT);
+    }
+
 	@ExceptionHandler(UserInvalidKeyException.class)
     public final ResponseEntity<ErrorResponse> handleUserInvalidKeyException(UserInvalidKeyException ex, WebRequest request) {
         List<String> details = new ArrayList<>();

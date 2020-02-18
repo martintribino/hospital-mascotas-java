@@ -27,7 +27,6 @@ public class IntervencionTest {
 				inicio,
 				fin,
 				"Descripcion",
-				null,
 				null);
 		assertEquals("Probando constructor de clase Intervencion con parámetros", Intervencion.class, i.getClass());
 	}
