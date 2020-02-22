@@ -32,6 +32,13 @@ public class MascotaDAOHibJPA extends GenericDAOHibJPA<Mascota>
 	}
 
 	@Override
+	public List<Mascota> recuperarMascotasExtraviadas() {
+		TypedQuery<Mascota> consulta = this.getEntityManager()
+				.createQuery("SELECT m FROM Mascota m WHERE m.extraviada = 1", Mascota.class );
+		return (List<Mascota>) consulta.getResultList();
+	}
+
+	@Override
 	public List<Mascota> recuperarMascotasPorDuenio(long id) {
 		TypedQuery<Mascota> consulta = this.getEntityManager()
 				.createQuery("SELECT m from Mascota m WHERE m.duenio.id = :idDuenio", Mascota.class);

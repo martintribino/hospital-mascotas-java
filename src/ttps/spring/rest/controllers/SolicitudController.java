@@ -121,7 +121,7 @@ public class SolicitudController {
 		}
 		Usuario vUsu = usuService.recuperarUsuarioPorNombre(vUserName);
 		if(vUsu == null) {
-	         throw new UserNotFoundException("Veterinario no válido: " + userName);
+	         throw new UserNotFoundException("Veterinario no válido: " + vUserName);
 	    }
 		Persona perfil = vUsu.getPersona();
 		if(perfil == null) {

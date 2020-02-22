@@ -60,6 +60,14 @@ public class MascotaService {
         return mascotaRepository.recuperarMascotas();
     }
 
+	//retorna una lista de todas las mascotas
+	public List<Mascota> listarFiltro(String filtro) {
+		if (filtro.equals("extraviadas"))
+			return mascotaRepository.recuperarMascotasExtraviadas();
+		else
+	        return mascotaRepository.recuperarMascotas();
+    }
+
 	//retorna una lista de mascotas por dueno 
 	public List<Mascota> listarPorDuenio(long id) {
         return mascotaRepository.recuperarMascotasPorDuenio(id);

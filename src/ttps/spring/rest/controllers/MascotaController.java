@@ -87,6 +87,47 @@ public class MascotaController {
 				aux.setSenias(mascota.getSenias());
 			if(f.getFechaNacimiento())
 				aux.setFechaNacimiento(mascota.getFechaNacimiento());
+			else
+				aux.setFechaNacimiento(null);
+			if(f.getImagen())
+				aux.setImagen(mascota.getImagen());
+			if(mascota.getDuenio() != null && f.getDuenio())
+				aux.setDuenio(mascota.getDuenio());
+			if(mascota.getVeterinario() != null && f.getVeterinario())
+				aux.setVeterinario(mascota.getVeterinario());
+			mascotasReturn.add(aux);
+		}
+		return new ResponseEntity<List<Mascota>>(mascotasReturn, HttpStatus.OK);
+	}
+
+	 //Recupero todas los mascotas pero solo las propiedades publicas
+	@GetMapping(value="/mascotas", produces={MediaType.APPLICATION_JSON_VALUE}, params="filtro")
+	public ResponseEntity<List<Mascota>> listarPublicasFiltro(@RequestParam("filtro") String filtro) {
+		List<Mascota> mascotas = mascotaService.listarFiltro(filtro);
+		if(mascotas.isEmpty()){
+			return new ResponseEntity<List<Mascota>>(mascotas, HttpStatus.OK);
+		}
+		List<Mascota> mascotasReturn = new ArrayList<Mascota>();
+		for (Mascota mascota: mascotas) {
+			FichaPublica f = mascota.getFicha();
+			Mascota aux = new Mascota();
+			aux.setSlug(mascota.getSlug());
+			if(f.getNombre())
+				aux.setNombre(mascota.getNombre());
+			if(f.getEspecie())
+				aux.setEspecie(mascota.getEspecie());
+			if(f.getRaza())
+				aux.setRaza(mascota.getRaza());
+			if(f.getSexo())
+				aux.setSexo(mascota.getSexo());
+			if(f.getColor())
+				aux.setColor(mascota.getColor());
+			if(f.getSenias())
+				aux.setSenias(mascota.getSenias());
+			if(f.getFechaNacimiento())
+				aux.setFechaNacimiento(mascota.getFechaNacimiento());
+			else
+				aux.setFechaNacimiento(null);
 			if(f.getImagen())
 				aux.setImagen(mascota.getImagen());
 			if(mascota.getDuenio() != null && f.getDuenio())

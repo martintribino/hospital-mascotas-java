@@ -20,17 +20,21 @@ import ttps.spring.exceptions.BadRequestException;
 import ttps.spring.exceptions.MascotaNotFoundException;
 import ttps.spring.exceptions.TurnoNoValidoException;
 import ttps.spring.exceptions.UserNotFoundException;
+import ttps.spring.model.Duenio;
 import ttps.spring.model.Evento;
 import ttps.spring.model.Mascota;
 import ttps.spring.model.Persona;
 import ttps.spring.model.Turno;
 import ttps.spring.model.Usuario;
+import ttps.spring.model.Veterinario;
 import ttps.spring.requests.EventoRequBody;
 import ttps.spring.responses.HorariosResponse;
+import ttps.spring.rest.services.DuenioService;
 import ttps.spring.rest.services.EventoService;
 import ttps.spring.rest.services.MascotaService;
 import ttps.spring.rest.services.TurnoService;
 import ttps.spring.rest.services.UsuarioService;
+import ttps.spring.rest.services.VeterinarioService;
 
 @RestController
 @RequestMapping(value="/api/eventos", produces={MediaType.APPLICATION_JSON_VALUE})
@@ -44,6 +48,10 @@ public class EventoController {
 	private UsuarioService usuService;
 	@Autowired
 	private MascotaService mascotaService;
+	@Autowired
+	private DuenioService duenioService;
+	@Autowired
+	private VeterinarioService vetService;
 
 	 //Recupero todas los eventos
 	@GetMapping
@@ -62,6 +70,56 @@ public class EventoController {
 		List<Turno> turnos = turnoService.listarXFecha(fecha);
 		HorariosResponse hr = new HorariosResponse(fecha, turnos);
 		return new ResponseEntity<HorariosResponse>(hr, HttpStatus.OK);
+	}
+
+	 //Recupero todas los eventos de un dia dado
+	@GetMapping(params = {"fecha", "usuario"})
+	public ResponseEntity<HorariosResponse> listarXFechaXUsuario(
+			@RequestParam("fecha") String fechaP,
+			@RequestParam("usuario") String usuario
+		) {
+		Usuario usu = usuService.recuperarUsuarioPorNombre(usuario);
+		if(usu == null) {
+	         throw new UserNotFoundException("Usuario no válido: " + usuario);
+	    }
+		Persona perfil = usu.getPersona();
+		if(perfil == null) {
+	         throw new UserNotFoundException("Perfil no encontrado." );
+	    }
+		try
+		{
+			LocalDate fecha = LocalDate.parse(fechaP.toString());
+			List<Turno> turnos;
+			HorariosResponse hr;
+			switch (perfil.getRole()) {
+				case "administrador":
+					turnos = turnoService.listarXFecha(fecha);
+					hr = new HorariosResponse(fecha, turnos);
+					return new ResponseEntity<HorariosResponse>(hr, HttpStatus.OK);
+				case "duenio":
+					Duenio d = duenioService.encontrar(perfil.getId());
+					if (d.getMascotas().isEmpty()) {
+						return new ResponseEntity<HorariosResponse>(HttpStatus.NO_CONTENT);
+					}
+					turnos = turnoService.listarXFechaYMascotas(fecha, d.getMascotas());
+					hr = new HorariosResponse(fecha, turnos);
+					return new ResponseEntity<HorariosResponse>(hr, HttpStatus.OK);
+				case "veterinario":
+					Veterinario v = vetService.encontrar(perfil.getId());
+					if (v.getMascotas().isEmpty()) {
+						return new ResponseEntity<HorariosResponse>(HttpStatus.NO_CONTENT);
+					}
+					turnos = turnoService.listarXFechaYMascotas(fecha, v.getMascotas());
+					hr = new HorariosResponse(fecha, turnos);
+					return new ResponseEntity<HorariosResponse>(hr, HttpStatus.OK);
+				default:
+			        throw new BadRequestException("No existe ese rol." );
+			}
+		}
+		catch(Exception ex)
+		{
+		    throw ex;
+		}
 	}
 
 	//guarda una Solicitud de una mascota de un duenio para un veterinario

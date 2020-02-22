@@ -6,12 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UsuarioReqBody {
 
-    @Size(min = 4, max = 50, message = "nombre debe tener entre 2 y 50 caracteres")
-	@JsonProperty("nombre_usuario")
+    @Size(min = 2, max = 50, message = "nombre debe tener entre 2 y 50 caracteres")
 	private String nombreUsuario;
 	@JsonProperty("nombre_usuario_viejo")
 	private String nombreUsuarioViejo;
-	@Size(min = 4, max = 150, message = "clave debe tener entre 4 y 150 caracteres")
 	private String clave;
 	@JsonProperty("confirmar_clave")
 	private String confirmarClave;

@@ -65,7 +65,7 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 				"admin", "Administrador", "Admin Ape", pass, "admin@admin.ad",
 				12365487, 123654, "Domicilio"
 			);
-		if(usuRepository.recuperarUsuarioPorNombre("admin") != null) {
+		if(usuRepository.recuperarUsuarioPorNombre("admin") == null) {
 			// guardar un administrador
 			try
 			{
@@ -182,8 +182,10 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 				);
 			try
 			{
+				m1.setExtraviada(true);
 				mascRepository.guardar(m1);
 				existsMasc1 = true;
+				m2.setExtraviada(true);
 				mascRepository.guardar(m2);
 				mascRepository.guardar(m3);
 				mascRepository.guardar(m4);

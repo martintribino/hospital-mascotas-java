@@ -12,13 +12,15 @@ import javax.persistence.Entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@DiscriminatorValue("Reproduccion")
+@DiscriminatorValue(Reproduccion.TIPO)
 public class Reproduccion extends Evento {
 
 	/**
 	 * Clase Reproduccion
 	 */
 	private static final long serialVersionUID = -2111217446201041768L;
+	//constantes
+	public static final String TIPO = "Reproduccion";
 
 	@Column(name="fecha_parto")
 	@JsonProperty("fecha_parto")
@@ -29,6 +31,7 @@ public class Reproduccion extends Evento {
 
 	public Reproduccion() {
 		super();
+		this.setTipo(Reproduccion.TIPO);
 		this.setFechaParto(Calendar.getInstance().getTime());
 		this.setNroCachorros(0);
 	}
@@ -41,7 +44,7 @@ public class Reproduccion extends Evento {
 			Mascota mascota,
 			Date fechaParto,
 			int nroCachorros) {
-		super(fecha, inicio, fin, descripcion, mascota);
+		super(fecha, inicio, fin, Reproduccion.TIPO, descripcion, mascota);
 		this.setFechaParto(fechaParto);
 		this.setNroCachorros(nroCachorros);
 	}

@@ -90,18 +90,24 @@ public class UsuarioController {
 		if(usuario == null) {
 	         throw new UserNotFoundException("Usuario no válido : " + usu.getNombreUsuario());
 	    }
-		if(usuario.getClave().equals(usu.getClave())) {
-	         throw new UserInvalidKeyException("La clave actual debe ser distinta a la anterior.");
-		}
-		if(!usu.getClave().equals(usu.getConfirmarClave())) {
-	         throw new UserInvalidKeyException("Las claves deben coincidir.");
+		if(!usuario.getClave().isEmpty()) {
+			//se queda con la que tiene
+			if(usuario.getClave().equals(usu.getClave())) {
+		         throw new UserInvalidKeyException("La clave actual debe ser distinta a la anterior.");
+			}
+			if(!usu.getClave().equals(usu.getConfirmarClave())) {
+		         throw new UserInvalidKeyException("Las claves deben coincidir.");
+			}
 		}
 		HttpHeaders headers = new HttpHeaders();
 		try
 		{
-			usuario.setNombreUsuario(usu.getNombreUsuario());
-			String pass = Encrypt.encode(usu.getClave());
-			usuario.setClave(pass);
+			if (usuario.getNombreUsuario() != usu.getNombreUsuario())
+				usuario.setNombreUsuario(usu.getNombreUsuario());
+			if(!usuario.getClave().isEmpty()) {
+				String pass = Encrypt.encode(usu.getClave());
+				usuario.setClave(pass);
+			}
 			this.usuarioService.actualizar(usuario);
 			HttpServletRequest req = (HttpServletRequest) request;
 	        String token = JWToken.getToken(req);

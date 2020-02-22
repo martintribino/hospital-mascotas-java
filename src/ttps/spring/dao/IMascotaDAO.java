@@ -11,6 +11,7 @@ public interface IMascotaDAO extends IGenericDAO<Mascota> {
 	public void agregarVeterinario(Mascota mascota, Veterinario veterinario);
 	public void removerVeterinario(Mascota mascota);
 	public List<Mascota> recuperarMascotas();
+	public List<Mascota> recuperarMascotasExtraviadas();
 	public List<Mascota> recuperarMascotasPorDuenio(long id);
 	public List<Mascota> recuperarMascotasPorVeterinario(long id);
 }

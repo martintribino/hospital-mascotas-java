@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -26,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Table(name="evento")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="tipo_evento", length=20)
+@DiscriminatorColumn(name="tipo_evento", discriminatorType=DiscriminatorType.STRING, length=20)
 public class Evento implements Serializable {
 
 	/**
@@ -37,9 +38,13 @@ public class Evento implements Serializable {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@JsonIgnore
 	private Long id;
+	@JsonIgnore
 	@Column(name="tipo_evento", insertable = false, updatable = false)
 	@JsonProperty("tipo_evento")
 	private String tipoEvento;
+    @Size(min = 5, max = 20, message = "tipo debe tener entre 5 y 20 caracteres")
+	@JsonProperty("tipo")
+	private String tipo;
     @Size(min = 10, max = 100, message = "descripcion debe tener entre 10 y 100 caracteres")
 	private String descripcion;
 	@JsonIgnore
@@ -56,6 +61,7 @@ public class Evento implements Serializable {
 	private Mascota mascota;
 
 	public Evento() {
+		this.setTipo("Evento");
 		this.setDescripcion("Descripcion Evento");
 		this.setMascota(null);
 		this.setTurno(new Turno());
@@ -65,8 +71,10 @@ public class Evento implements Serializable {
 			LocalDate fecha,
 			LocalTime inicio,
 			LocalTime fin,
+			String tipo,
 			String descripcion,
 			Mascota mascota) {
+		this.setTipo(tipo);
 		this.setDescripcion(descripcion);
 		this.setMascota(mascota);
 		this.setTurno(new Turno(fecha, inicio, fin, Turno.Estados.RESERVADO, this));
@@ -102,6 +110,14 @@ public class Evento implements Serializable {
 
 	public void setTipoEvento(String tipoEvento) {
 		this.tipoEvento = tipoEvento;
+	}
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
 	}
 
 	public Turno getTurno() {

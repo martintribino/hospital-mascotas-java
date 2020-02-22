@@ -3,6 +3,7 @@ package ttps.spring.implementation;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.TypedQuery;
 
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ttps.spring.dao.ITurnoDAO;
 import ttps.spring.exceptions.TurnoNoValidoException;
+import ttps.spring.model.Mascota;
 import ttps.spring.model.Turno;
 
 @Repository
@@ -71,6 +73,17 @@ public class TurnoDAOHibJPA extends GenericDAOHibJPA<Turno>
 		TypedQuery<Turno> consulta = this.getEntityManager()
 				.createQuery("SELECT t from Turno t WHERE (t.fecha = :tfecha)", Turno.class);
 		consulta.setParameter("tfecha", fecha);
+		List<Turno> trns = consulta.getResultList();
+		return trns;
+	}
+
+	@Override
+	public List<Turno> listarXFechaYMascotas(LocalDate fecha, List<Mascota> mascotas) {
+		List<Long> mascotasIds = mascotas.stream().map(Mascota::getId).collect(Collectors.toList());
+		TypedQuery<Turno> consulta = this.getEntityManager()
+				.createQuery("SELECT t from Turno t WHERE (t.fecha = :tfecha and t.mascota <> null and t.mascota.id IN :tmascotas)", Turno.class);
+		consulta.setParameter("tfecha", fecha);
+		consulta.setParameter("tmascotas", mascotasIds);
 		List<Turno> trns = consulta.getResultList();
 		return trns;
 	}

@@ -59,6 +59,7 @@ public class Mascota implements Serializable {
     @Past(message = "Por favor proporcione una fecha de nacimiento válida")
 	private Date fechaNacimiento;
 	private String imagen;
+	private Boolean extraviada;
 	@OneToOne(
 			optional = false,
 			fetch = FetchType.EAGER,
@@ -90,6 +91,7 @@ public class Mascota implements Serializable {
 		this.setColor("");
 		this.setSexo("");
 		this.setImagen("");
+		this.setExtraviada(false);
 		this.setDuenio(null);
 		this.setEventos(new ArrayList<Evento>());
 		this.setFicha(new FichaPublica());
@@ -116,6 +118,7 @@ public class Mascota implements Serializable {
 		this.setColor(color);
 		this.setSexo(sexo);
 		this.setImagen(imagen);
+		this.setExtraviada(false);
 		this.setDuenio(duenio);
 		this.setEventos(new ArrayList<Evento>());
 		this.setFicha(new FichaPublica());
@@ -143,6 +146,7 @@ public class Mascota implements Serializable {
 		this.setColor(color);
 		this.setSexo(sexo);
 		this.setImagen(imagen);
+		this.setExtraviada(false);
 		this.setDuenio(duenio);
 		this.setVeterinario(veterinario);
 		this.setEventos(new ArrayList<Evento>());
@@ -227,6 +231,14 @@ public class Mascota implements Serializable {
 
 	public void setImagen(String imagen) {
 		this.imagen = imagen;
+	}
+
+	public Boolean getExtraviada() {
+		return extraviada;
+	}
+
+	public void setExtraviada(Boolean extraviada) {
+		this.extraviada = extraviada;
 	}
 
 	public FichaPublica getFicha() {

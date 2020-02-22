@@ -7,13 +7,15 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("Visita")
+@DiscriminatorValue(Visita.TIPO)
 public class Visita extends Evento {
 
 	/**
 	 * Clase Visita
 	 */
 	private static final long serialVersionUID = -8503792134284508309L;
+	//constantes
+	public static final String TIPO = "Visita";
 	
 	private String peso;
 	private String motivo;
@@ -22,6 +24,7 @@ public class Visita extends Evento {
 
 	public Visita() {
 		super();
+		this.setTipo(Visita.TIPO);
 		this.setPeso("");
 		this.setMotivo("");
 		this.setDiagnostico("");
@@ -39,7 +42,7 @@ public class Visita extends Evento {
 			String motivo,
 			String diagnostico,
 			String indicaciones) {
-		super(fecha, inicio, fin, descripcion, mascota);
+		super(fecha, inicio, fin, Visita.TIPO, descripcion, mascota);
 		this.setPeso(peso);
 		this.setMotivo(motivo);
 		this.setDiagnostico(diagnostico);

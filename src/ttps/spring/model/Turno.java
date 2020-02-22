@@ -79,7 +79,6 @@ public class Turno implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = GenericHelper.LOCALTIME_FORMAT)
 	private LocalTime fin;
 	private Turno.Estados estado;
-	@JsonIgnore
 	@OneToOne(mappedBy="turno")
 	private Evento evento;
 
