@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ttps.spring.exceptions.BadRequestException;
+import ttps.spring.exceptions.EventoNotFound;
 import ttps.spring.exceptions.MascotaNotFoundException;
 import ttps.spring.exceptions.TurnoNoValidoException;
 import ttps.spring.exceptions.UserNotFoundException;
@@ -182,6 +184,58 @@ public class EventoController {
 		catch(Exception ex)
 		{
 		    throw ex;
+		}
+	}
+
+	//borra una mascota
+	@DeleteMapping
+	public ResponseEntity<Evento> eliminar(
+			@RequestParam("username") String userName,
+			@RequestParam("slg") String slug
+			) {
+		Usuario usu = usuService.recuperarUsuarioPorNombre(userName);
+		if(usu == null) {
+	         throw new UserNotFoundException("Usuario no válido: " + userName);
+	    }
+		Evento e = eventoService.encontrar(slug);
+		if(e == null) {
+	         throw new EventoNotFound("Evento no válido: " + userName);
+	    }
+		Persona perfil = usu.getPersona();
+		if (perfil == null) {
+	         throw new UserNotFoundException("Perfil no encontrado." );
+	    }
+		try
+		{
+			switch (perfil.getRole()) {
+				case "administrador":
+					eventoService.eliminar(e.getId());
+					return new ResponseEntity<Evento>(HttpStatus.NO_CONTENT);
+				case "duenio":
+					if(
+						e.getMascota() == null ||
+						e.getMascota().getDuenio() == null ||
+						e.getMascota().getDuenio().getId() != usu.getPersona().getId()) {
+						throw new BadRequestException("Dueño no válido: " + userName);
+					}
+					eventoService.eliminar(e.getId());
+					return new ResponseEntity<Evento>(HttpStatus.NO_CONTENT);
+				case "veterinario":
+					if(
+						e.getMascota() == null ||
+						e.getMascota().getVeterinario() == null ||
+						e.getMascota().getVeterinario().getId() != usu.getPersona().getId()) {
+						throw new BadRequestException("Veterinario no válido: " + userName);
+					}
+					eventoService.eliminar(e.getId());
+					return new ResponseEntity<Evento>(HttpStatus.NO_CONTENT);
+				default:
+			        throw new BadRequestException("No role." );
+			}
+		}
+		catch (Exception ex)
+		{
+			throw ex;
 		}
 	}
 

@@ -20,6 +20,11 @@ public class EventoService {
         return eventoRepository.encontrar(id);
     }
 
+	//retorna un Evento por slug
+	public Evento encontrar(String slug) {
+        return eventoRepository.encontrar(slug);
+    }
+
 	//comprueba si existe un Evento
 	public Boolean existe(Evento e) {
         return eventoRepository.existe(e);

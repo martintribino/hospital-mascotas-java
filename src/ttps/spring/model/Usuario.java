@@ -37,11 +37,13 @@ public class Usuario implements Serializable {
 	@JsonIgnore
 	@OneToOne(mappedBy="usuario")
 	private Persona persona;
+	private String imagen;
 
 	public Usuario() {
 		this.setNombreUsuario("");
 		this.setClave("");
 		this.setPersona(null);
+		this.setImagen(null);
 	}
 
 	public Usuario(
@@ -52,6 +54,19 @@ public class Usuario implements Serializable {
 		this.setNombreUsuario(nombreUsuario);
 		this.setClave(claveStr);
 		this.setPersona(persona);
+		this.setImagen(null);
+	}
+
+	public Usuario(
+			String nombreUsuario,
+			String claveStr,
+			Persona persona,
+			String imagen
+	) {
+		this.setNombreUsuario(nombreUsuario);
+		this.setClave(claveStr);
+		this.setPersona(persona);
+		this.setImagen(imagen);
 	}
 
 	public String getNombreUsuario() {
@@ -75,11 +90,11 @@ public class Usuario implements Serializable {
 	}
 
 	public String getImagen() {
-		String img = "";
-		if(this.getPersona() != null) {
-			img = this.getPersona().getImagen();
-		}
-		return img;
+		return this.imagen;
+	}
+
+	public void setImagen(String imagen) {
+		this.imagen = imagen;
 	}
 
 	public void setPersona(Persona persona) {

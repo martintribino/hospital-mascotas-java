@@ -47,7 +47,6 @@ public class Persona implements Serializable {
 	@NotBlank(message = "Por favor proporcione un email")
 	private String email;
 	private int telefono;
-	private String imagen;
 	private String domicilio;
 	@OneToOne(
 			optional = false,
@@ -157,14 +156,6 @@ public class Persona implements Serializable {
 
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
-	}
-
-	public String getImagen() {
-		return imagen;
-	}
-
-	public void setImagen(String imagen) {
-		this.imagen = imagen;
 	}
 
 	public String getRole() {

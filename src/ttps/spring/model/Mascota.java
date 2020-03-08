@@ -27,6 +27,8 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import ttps.spring.helpers.GenericHelper;
 
@@ -41,7 +43,8 @@ public class Mascota implements Serializable {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@JsonIgnore
 	private Long id;
-	@Column(name="slug", insertable = true, updatable = false, nullable = false, unique = true, length = 50)
+	@Column(name="slug", unique = true, updatable = true)
+    @JsonProperty(access = Access.READ_ONLY)
 	private String slug;
     @Size(min = 2, max = 40, message = "nombre debe tener entre 2 y 40 caracteres")
 	private String nombre;
@@ -63,7 +66,7 @@ public class Mascota implements Serializable {
 	@OneToOne(
 			optional = false,
 			fetch = FetchType.EAGER,
-			cascade = CascadeType.ALL,
+			cascade={CascadeType.ALL},
 			orphanRemoval = true
 	)
 	private FichaPublica ficha;
@@ -73,10 +76,17 @@ public class Mascota implements Serializable {
 	@ManyToOne(optional = true)
 	@JoinColumn(name="veterinario")
 	private Veterinario veterinario;
-	@OneToMany(mappedBy="mascota", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(
+			mappedBy="mascota",
+			cascade={CascadeType.ALL},
+			orphanRemoval = true
+	)
 	@JsonIgnore
 	private List<Evento> eventos;
-	@OneToMany(mappedBy="mascota", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy="mascota",
+			cascade={CascadeType.ALL},
+			orphanRemoval = true
+	)
 	@JsonIgnore
 	private List<Solicitud> solicitudes;
 

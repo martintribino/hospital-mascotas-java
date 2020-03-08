@@ -3,6 +3,7 @@ package ttps.spring.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,6 +24,7 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name="evento")
@@ -38,6 +40,9 @@ public class Evento implements Serializable {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@JsonIgnore
 	private Long id;
+	@Column(name="slug", unique = true, updatable = true)
+    @JsonProperty(access = Access.READ_ONLY)
+	private String slug;
 	@JsonIgnore
 	@Column(name="tipo_evento", insertable = false, updatable = false)
 	@JsonProperty("tipo_evento")
@@ -61,6 +66,8 @@ public class Evento implements Serializable {
 	private Mascota mascota;
 
 	public Evento() {
+		UUID uuid = UUID.randomUUID();
+		this.setSlug(uuid.toString());
 		this.setTipo("Evento");
 		this.setDescripcion("Descripcion Evento");
 		this.setMascota(null);
@@ -74,6 +81,8 @@ public class Evento implements Serializable {
 			String tipo,
 			String descripcion,
 			Mascota mascota) {
+		UUID uuid = UUID.randomUUID();
+		this.setSlug(uuid.toString());
 		this.setTipo(tipo);
 		this.setDescripcion(descripcion);
 		this.setMascota(mascota);
@@ -86,6 +95,14 @@ public class Evento implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getSlug() {
+		return slug;
+	}
+
+	public void setSlug(String slug) {
+		this.slug = slug;
 	}
 
 	public String getDescripcion() {

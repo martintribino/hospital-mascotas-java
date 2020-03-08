@@ -49,13 +49,13 @@ public class GenericDAOHibJPA<T> implements Serializable, IGenericDAO<T> {
 	}
 
 	@Override
-	public T encontrar(Serializable id) {
+	public T encontrar(Long id) {
 		T objReturn = (T) this.getEntityManager().find(this.entityClass, id);
 		return objReturn;
 	}
 
 	@Override
-	public T obtenerReferencia(Serializable id) {
+	public T obtenerReferencia(Long id) {
 		T objReturn = (T) this.getEntityManager().getReference(this.entityClass, id);
 		return objReturn;
 	}
@@ -66,7 +66,7 @@ public class GenericDAOHibJPA<T> implements Serializable, IGenericDAO<T> {
 	}
 
 	@Override
-	public Boolean existe(Serializable id) {
+	public Boolean existe(Long id) {
 		return this.encontrar(id) != null;
 	}
 
@@ -77,7 +77,7 @@ public class GenericDAOHibJPA<T> implements Serializable, IGenericDAO<T> {
 						this.getEntityManager().merge(entity));
 	}
 	
-	public T eliminar(Serializable id) {
+	public T eliminar(Long id) {
 		 T entity = this.getEntityManager().find(this.entityClass, id);
 		 if (entity != null) {
 			 this.eliminar(entity);

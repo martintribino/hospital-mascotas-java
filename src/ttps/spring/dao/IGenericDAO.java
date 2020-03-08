@@ -1,6 +1,5 @@
 package ttps.spring.dao;
 
-import java.io.Serializable;
 import java.util.List;
 
 public interface IGenericDAO<T> {
@@ -11,11 +10,11 @@ public interface IGenericDAO<T> {
 
 	T guardar(T entity);
 	T actualizar(T entity);
-	Boolean existe(Serializable id);
+	Boolean existe(Long id);
 	Boolean existe(T entity);
-	T encontrar(Serializable id);
-	T obtenerReferencia(Serializable id);
+	T obtenerReferencia(Long id);
 	void eliminar(T entity);
-	T eliminar(Serializable id);
+	T eliminar(Long id);
 	List<T> listar(String columnOrder, String order);
+	T encontrar(Long id);
 }

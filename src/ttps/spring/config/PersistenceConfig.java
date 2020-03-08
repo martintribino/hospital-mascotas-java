@@ -66,9 +66,14 @@ public class PersistenceConfig {
 		Properties properties = new Properties();
 		properties.setProperty("hibernate.hbm2ddl.auto", "create");
 		properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
-		properties.setProperty("spring.jpa.properties.javax.persistence.validation.mode", "none");
+		properties.setProperty("spring.jpa.database-platform", "org.hibernate.dialect.MySQL57InnoDBDialect");
+		properties.setProperty("spring.jpa.properties.hibernate.dialect.storage_engine", "innodb");
+		properties.setProperty("spring.http.multipart.enabled", "true");
+		properties.setProperty("spring.servlet.multipart.max-file-size", "256KB");
+		properties.setProperty("spring.servlet.multipart.max-request-size", "1MB");
+		properties.setProperty("spring.servlet.multipart.enabled", "true");
 
 		return properties;
 	}
-		
+
 }

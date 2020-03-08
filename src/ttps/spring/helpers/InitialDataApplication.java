@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -29,15 +30,18 @@ import ttps.spring.model.Enfermedad;
 import ttps.spring.model.Evento;
 import ttps.spring.model.Intervencion;
 import ttps.spring.model.Mascota;
+import ttps.spring.model.Recordatorio;
 import ttps.spring.model.Reproduccion;
 import ttps.spring.model.Solicitud;
 import ttps.spring.model.Turno;
 import ttps.spring.model.Vacuna;
 import ttps.spring.model.Veterinario;
 import ttps.spring.model.Visita;
+import ttps.spring.rest.services.StorageService;
 
 
 @Component
+@EnableConfigurationProperties(StorageProperties.class)
 public class InitialDataApplication implements ApplicationListener<ContextRefreshedEvent> {
 
 	private static final Logger log = LoggerFactory.getLogger(InitialDataApplication.class);
@@ -56,9 +60,12 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
     private IUsuarioDAO usuRepository;
 	@Autowired
     private IEventoDAO evRepository;
+	@Autowired
+	private StorageService storageService;
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
+		storageService.init();
 		String pass = Encrypt.encode("admin123");
 		//administrador
 		Administrador a = new Administrador(
@@ -292,6 +299,24 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 				{
 					log.info("------------------------------------");
 					log.info("Vacuna existente");
+					log.info("------------------------------------");
+				}
+				inicio = LocalTime.of(11, 30);
+				fin = LocalTime.of(11, 59);
+				Recordatorio recordatorio = new Recordatorio(
+						fechaMañana, inicio, fin, "Recordatorio", m1
+					);
+				try
+				{
+					evRepository.guardar(recordatorio);
+					log.info("------------------------------------");
+					log.info("Recordatorio creada");
+					log.info("------------------------------------");
+				}
+				catch(Exception ex)
+				{
+					log.info("------------------------------------");
+					log.info("Recordatorio existente");
 					log.info("------------------------------------");
 				}
 				Vacuna vacuna2 = new Vacuna(

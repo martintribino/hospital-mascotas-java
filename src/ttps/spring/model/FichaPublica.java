@@ -1,6 +1,7 @@
 package ttps.spring.model;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,8 +12,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import ttps.spring.helpers.GenericHelper;
 
 @Entity
 @Table(name="ficha_publica")
@@ -53,11 +52,8 @@ public class FichaPublica implements Serializable {
 		this.setImagen(false);
 		this.setDuenio(false);
 		this.setVeterinario(false);
-		this.generarSlug();
-	}
-
-	private void generarSlug() {
-		this.slug = GenericHelper.slugToday();
+		UUID uuid = UUID.randomUUID();
+		this.setSlug(uuid.toString());
 	}
 
 	public Long getId() {
@@ -70,6 +66,10 @@ public class FichaPublica implements Serializable {
 
 	public String getSlug() {
 		return slug;
+	}
+
+	public void setSlug(String slug) {
+		this.slug = slug;
 	}
 
 	public Boolean getNombre() {

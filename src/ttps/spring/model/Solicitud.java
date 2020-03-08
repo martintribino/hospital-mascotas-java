@@ -2,6 +2,7 @@ package ttps.spring.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,7 +61,8 @@ public class Solicitud implements Serializable {
 		this.setEstado(Solicitud.Estados.ESPERA);
 		this.setMascota(new Mascota());
 		this.setVeterinario(new Veterinario());
-		this.generarSlug();
+		UUID uuid = UUID.randomUUID();
+		this.setSlug(uuid.toString());
 	}
 	
 	public Solicitud(
@@ -72,11 +74,8 @@ public class Solicitud implements Serializable {
 		this.setEstado(estado);
 		this.setMascota(mascota);
 		this.setVeterinario(veterinario);
-		this.generarSlug();
-	}
-
-	private void generarSlug() {
-		this.slug = GenericHelper.slugToday();
+		UUID uuid = UUID.randomUUID();
+		this.setSlug(uuid.toString());
 	}
 
 	public Long getId() {
@@ -89,6 +88,10 @@ public class Solicitud implements Serializable {
 
 	public String getSlug() {
 		return slug;
+	}
+
+	public void setSlug(String slg) {
+		this.slug = slg;
 	}
 
 	public Date getFecha() {

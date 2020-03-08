@@ -25,6 +25,7 @@ import ttps.spring.model.Encrypt;
 import ttps.spring.model.Persona;
 import ttps.spring.model.Usuario;
 import ttps.spring.model.Veterinario;
+import ttps.spring.requests.ImagenReqBody;
 import ttps.spring.requests.UsuarioReqBody;
 import ttps.spring.responses.UsuarioResponse;
 import ttps.spring.rest.services.UsuarioService;
@@ -120,6 +121,30 @@ public class UsuarioController {
 		}
 		catch(Exception e) {
 	         throw new UserInvalidKeyException("Las claves deben coincidir.");
+		}
+	}
+
+	//edita la imagen de un usuario
+	@RequestMapping(value="/api/usuario/imagen/editar", produces={MediaType.APPLICATION_JSON_VALUE})
+	@PutMapping()
+	public @ResponseBody ResponseEntity<ImagenReqBody> editarImagenUsuario(
+			@Valid @RequestBody ImagenReqBody img
+			) throws UserNotFoundException {
+		Usuario usuario = usuarioService.recuperarUsuarioPorNombre(img.getNombreUsuario());
+		if(usuario == null) {
+	         throw new UserNotFoundException("Usuario no válido : " + img.getNombreUsuario());
+	    }
+		try
+		{
+			usuario.setImagen(img.getImagen());
+			this.usuarioService.actualizar(usuario);
+			ImagenReqBody resp = new ImagenReqBody();
+			resp.setNombreUsuario(usuario.getNombreUsuario());
+			resp.setImagen(usuario.getImagen());
+			return new ResponseEntity<ImagenReqBody>(resp, HttpStatus.OK);
+		}
+		catch(Exception e) {
+	         throw new UserNotFoundException("Usuario no válido : " + img.getNombreUsuario());
 		}
 	}
 

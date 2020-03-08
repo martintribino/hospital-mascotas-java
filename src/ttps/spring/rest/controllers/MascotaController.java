@@ -156,7 +156,7 @@ public class MascotaController {
 			byte[] base64 = Base64.encode(QRCodeGenerator.getQRCodeImage(strQRCode, width, height));
 			String qrstr = new String(base64);
 			ImageResponse ir = new ImageResponse();
-			ir.setQrcode(qrstr);
+			ir.setB64str(qrstr);
 			ir.setExtension("png");
 			ir.setWidth(width);
 			ir.setHeight(height);

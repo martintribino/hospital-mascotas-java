@@ -50,6 +50,11 @@ public class MascotaService {
 		mascotaRepository.agregarVeterinario(mascota, veterinario);
     }
 
+	//actualiza una mascota
+	public void actualizarMascota(Mascota mascota, String imagen) {
+		mascotaRepository.actualizarMascota(mascota, imagen);
+    }
+
 	//aprueba una Solicitud existente
 	public void removerVeterinario(Mascota mascota) {
 		mascotaRepository.removerVeterinario(mascota);

@@ -9,24 +9,24 @@ public class ImageResponse implements Serializable {
 	 */
 	private static final long serialVersionUID = -8454704625156096061L;
 
-	private String qrcode;
+	private String b64str;
 	private String extension;
 	private int width;
 	private int height;
 
 	public ImageResponse() {
-		this.qrcode = "";
+		this.setB64str("");
 		this.setExtension("");
 		this.setWidth(150);
 		this.setHeight(150);
 	}
 
-	public String getQrcode() {
-		return qrcode;
+	public String getB64str() {
+		return b64str;
 	}
 
-	public void setQrcode(String qrcode) {
-		this.qrcode = qrcode;
+	public void setB64str(String b64str) {
+		this.b64str = b64str;
 	}
 
 	public String getExtension() {

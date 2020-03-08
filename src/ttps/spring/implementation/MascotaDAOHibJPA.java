@@ -68,6 +68,15 @@ public class MascotaDAOHibJPA extends GenericDAOHibJPA<Mascota>
 	}
 
 	@Override
+	public void actualizarMascota(Mascota mascota, String imagen) {
+		Query consulta = this.getEntityManager()
+				.createQuery("UPDATE Mascota m SET m.imagen = :img WHERE m.id = :idMasc");
+		consulta.setParameter("idMasc", mascota.getId());
+		consulta.setParameter("img", imagen);
+		consulta.executeUpdate();
+	}
+
+	@Override
 	public void agregarVeterinario(Mascota mascota, Veterinario veterinario) {
 		Query consulta = this.getEntityManager()
 				.createQuery("UPDATE Mascota m SET m.veterinario.id = :idVet WHERE m.id = :idMasc");

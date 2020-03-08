@@ -56,6 +56,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
     }
 
+	@ExceptionHandler(EventoNotFound.class)
+    public final ResponseEntity<ErrorResponse> handleEventoNotFoundException(EventoNotFound ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("Evento Not Found", details);
+        return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
+    }
+
 	@ExceptionHandler(SolicitudNotFoundException.class)
     public final ResponseEntity<ErrorResponse> handleSolicitudNotFoundException(SolicitudNotFoundException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
@@ -86,6 +94,22 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         details.add(ex.getLocalizedMessage());
         ErrorResponse error = new ErrorResponse("Not Valid Shift.", details);
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.CONFLICT);
+    }
+
+	@ExceptionHandler(StorageException.class)
+    public final ResponseEntity<ErrorResponse> handleStorageException(StorageException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("Storage exception.", details);
+        return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
+    }
+
+	@ExceptionHandler(StorageFileNotFoundException.class)
+    public final ResponseEntity<ErrorResponse> handleStorageFileNotFoundException(StorageFileNotFoundException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("Storage file not found.", details);
+        return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
     }
 
 	@ExceptionHandler(UserInvalidKeyException.class)
