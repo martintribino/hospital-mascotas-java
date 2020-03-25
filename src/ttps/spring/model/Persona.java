@@ -57,7 +57,7 @@ public class Persona implements Serializable {
 	private Usuario usuario;
 	@Column(name="role", insertable = false, updatable = false)
 	private String role;
-	
+
 	public Persona() {
 		this.setNombre("");
 		this.setApellido("");
@@ -67,7 +67,7 @@ public class Persona implements Serializable {
 		this.setDomicilio("");
 		this.setUsuario(null);
 	}
-	
+
 	protected Persona(
 			String nombreUsuario,
 			String nombre,
@@ -93,7 +93,24 @@ public class Persona implements Serializable {
 				usuarioNuevo
 				);
 	}
-	
+
+	protected Persona(
+			String nombre,
+			String apellido,
+			String email,
+			int dni,
+			int telefono,
+			String domicilio,
+			Usuario usuario) {
+		this.setNombre(nombre);
+		this.setApellido(apellido);
+		this.setEmail(email);
+		this.setDni(dni);
+		this.setTelefono(telefono);
+		this.setDomicilio(domicilio);
+		this.setUsuario(usuario);
+	}
+
 	public Long getId() {
 		return id;
 	}

@@ -41,6 +41,7 @@ public class FichaPublicaController {
 			ficha.setSenias(fichaParam.getSenias());
 			ficha.setFechaNacimiento(fichaParam.getFechaNacimiento());
 			ficha.setImagen(fichaParam.getImagen());
+			ficha.setExtraviada(fichaParam.getExtraviada());
 			ficha.setDuenio(fichaParam.getDuenio());
 			ficha.setVeterinario(fichaParam.getVeterinario());
 			fichaService.actualizar(ficha);

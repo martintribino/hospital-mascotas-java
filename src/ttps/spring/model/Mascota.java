@@ -117,6 +117,7 @@ public class Mascota implements Serializable {
 			String color,
 			String senias,
 			String imagen,
+			Boolean extraviada,
 			Duenio duenio) {
 		UUID uuid = UUID.randomUUID();
 		this.setSlug(uuid.toString());
@@ -128,7 +129,7 @@ public class Mascota implements Serializable {
 		this.setColor(color);
 		this.setSexo(sexo);
 		this.setImagen(imagen);
-		this.setExtraviada(false);
+		this.setExtraviada(extraviada);
 		this.setDuenio(duenio);
 		this.setEventos(new ArrayList<Evento>());
 		this.setFicha(new FichaPublica());
@@ -144,6 +145,7 @@ public class Mascota implements Serializable {
 			String color,
 			String senias,
 			String imagen,
+			Boolean extraviada,
 			Duenio duenio,
 			Veterinario veterinario) {
 		UUID uuid = UUID.randomUUID();
@@ -156,7 +158,7 @@ public class Mascota implements Serializable {
 		this.setColor(color);
 		this.setSexo(sexo);
 		this.setImagen(imagen);
-		this.setExtraviada(false);
+		this.setExtraviada(extraviada);
 		this.setDuenio(duenio);
 		this.setVeterinario(veterinario);
 		this.setEventos(new ArrayList<Evento>());
@@ -294,119 +296,123 @@ public class Mascota implements Serializable {
 	public void habilitarNombre() {
 		this.ficha.setNombre(true);
 	}
-	
+
 	public void deshabilitarNombre() {
 		this.ficha.setNombre(false);
 	}
-	
+
 	public Boolean nombreEstaHabilitado() {
 		return this.ficha.getNombre();
 	}
-	
+
 	public void habilitarFecha() {
 		this.ficha.setFechaNacimiento(true);
 	}
-	
+
 	public void deshabilitarFecha() {
 		this.ficha.setFechaNacimiento(false);
 	}
-	
+
 	public Boolean fechaEstaHabilitado() {
 		return this.ficha.getFechaNacimiento();
 	}
-	
+
 	public void habilitarEspecie() {
 		this.ficha.setEspecie(true);
 	}
-	
+
 	public void deshabilitarEspecie() {
 		this.ficha.setEspecie(false);
 	}
-	
+
 	public Boolean especieEstaHabilitado() {
 		return this.ficha.getEspecie();
 	}
-	
+
 	public void habilitarRaza() {
 		this.ficha.setRaza(true);
 	}
-	
+
 	public void deshabilitarRaza() {
 		this.ficha.setRaza(false);
 	}
-	
+
 	public Boolean razaEstaHabilitado() {
 		return this.ficha.getRaza();
 	}
-	
+
 	public void habilitarSexo() {
 		this.ficha.setSexo(true);
 	}
-	
+
 	public void deshabilitarSexo() {
 		this.ficha.setSexo(false);
 	}
-	
+
 	public Boolean sexoEstaHabilitado() {
 		return this.ficha.getSexo();
 	}
-	
+
 	public void habilitarColor() {
 		this.ficha.setColor(true);
 	}
-	
+
 	public void deshabilitarColor() {
 		this.ficha.setColor(false);
 	}
-	
+
 	public Boolean colorEstaHabilitado() {
 		return this.ficha.getColor();
 	}
-	
+
 	public void habilitarSenias() {
 		this.ficha.setSenias(true);
 	}
-	
+
 	public void deshabilitarSenias() {
 		this.ficha.setSenias(false);
 	}
-	
+
 	public Boolean seniasEstaHabilitado() {
 		return this.ficha.getSenias();
 	}
-	
+
 	public void habilitarImagen() {
 		this.ficha.setImagen(true);
 	}
-	
+
 	public void deshabilitarImagen() {
 		this.ficha.setImagen(false);
 	}
-	
+
 	public Boolean imagenEstaHabilitado() {
 		return this.ficha.getImagen();
 	}
-	
+
+	public Boolean extraviadaEstaHabilitado() {
+		return this.ficha.getExtraviada();
+	}
+
 	public void habilitarDuenio() {
 		this.ficha.setDuenio(true);
 	}
-	
+
 	public void deshabilitarDuenio() {
 		this.ficha.setDuenio(false);
 	}
-	
+
 	public Boolean duenioEstaHabilitado() {
 		return this.ficha.getDuenio();
 	}
-	
+
 	public void habilitarVeterinario() {
 		this.ficha.setVeterinario(true);
 	}
-	
+
 	public void deshabilitarVeterinario() {
 		this.ficha.setVeterinario(false);
 	}
-	
+
 	public Boolean veterinarioEstaHabilitado() {
 		return this.ficha.getVeterinario();
 	}
@@ -414,6 +420,7 @@ public class Mascota implements Serializable {
 	public String getFichaPublicaSTR() {
 		String result = "";
 		String lineSep = System.lineSeparator();
+		result += " " + lineSep;
 		result += this.nombreEstaHabilitado() ? "Nombre: " + this.getNombre() + lineSep : "";
 		result += this.especieEstaHabilitado() ? " Especie: " + this.getEspecie() + lineSep : "";
 		result += this.razaEstaHabilitado() ? " Raza: " + this.getNombre() + lineSep : "";
@@ -422,6 +429,7 @@ public class Mascota implements Serializable {
 		result += this.seniasEstaHabilitado() ? " Señas: " + this.getSenias() + lineSep : "";
 		result += this.fechaEstaHabilitado() ? " Fecha de Nacimiento: " + this.getFechaNacimiento() + lineSep : "";
 		result += this.imagenEstaHabilitado() ? " Imagen: " + this.getImagen() + lineSep : "";
+		result += this.extraviadaEstaHabilitado() && this.getExtraviada() ? " Extraviada " + lineSep : "";
 		result += this.duenioEstaHabilitado() && this.getDuenio() != null ? " Duenio: " + this.getDuenio().getNombre() + " " + this.getDuenio().getApellido() + lineSep : "";
 		result += this.veterinarioEstaHabilitado() && this.getVeterinario() != null ? " Veterinario: " + this.getVeterinario().getNombre() + " " + this.getVeterinario().getApellido() + lineSep : "";
 		return result;

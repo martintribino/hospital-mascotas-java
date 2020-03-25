@@ -64,7 +64,7 @@ public class PersistenceConfig {
 	
 	private Properties additionalProperties() {
 		Properties properties = new Properties();
-		properties.setProperty("hibernate.hbm2ddl.auto", "create");
+		properties.setProperty("hibernate.hbm2ddl.auto", "update");
 		properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
 		properties.setProperty("spring.jpa.database-platform", "org.hibernate.dialect.MySQL57InnoDBDialect");
 		properties.setProperty("spring.jpa.properties.hibernate.dialect.storage_engine", "innodb");

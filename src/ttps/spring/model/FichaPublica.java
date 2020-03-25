@@ -35,6 +35,7 @@ public class FichaPublica implements Serializable {
 	private Boolean senias;
 	private Boolean fechaNacimiento;
 	private Boolean imagen;
+	private Boolean extraviada;
 	private Boolean duenio;
 	private Boolean veterinario;
 	@JsonIgnore
@@ -50,6 +51,7 @@ public class FichaPublica implements Serializable {
 		this.setSenias(false);
 		this.setFechaNacimiento(false);
 		this.setImagen(false);
+		this.setExtraviada(false);
 		this.setDuenio(false);
 		this.setVeterinario(false);
 		UUID uuid = UUID.randomUUID();
@@ -158,6 +160,14 @@ public class FichaPublica implements Serializable {
 
 	public void setVeterinario(Boolean veterinario) {
 		this.veterinario = veterinario;
+	}
+
+	public Boolean getExtraviada() {
+		return extraviada;
+	}
+
+	public void setExtraviada(Boolean extraviada) {
+		this.extraviada = extraviada;
 	}
 
 }

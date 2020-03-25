@@ -24,7 +24,7 @@ public class Veterinario extends Persona {
 	/**
 	 * Clase Veterinario
 	 */
-	
+
 	private static final long serialVersionUID = 1L;
 
 	@Column(name="nombre_clinica")
@@ -38,7 +38,7 @@ public class Veterinario extends Persona {
 	@OneToMany(mappedBy="veterinario", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private List<Solicitud> solicitudes;
-	
+
 	public Veterinario() {
 		super();
 		this.setNombreClinica("");
@@ -47,7 +47,7 @@ public class Veterinario extends Persona {
 		this.setSolicitudes(new ArrayList<Solicitud>());
 		this.setMascotas(new ArrayList<Mascota>());
 	}
-	
+
 	public Veterinario(PersonaReqBody p) {
 		super(
 				p.getNombreUsuario(),
@@ -65,7 +65,7 @@ public class Veterinario extends Persona {
 		this.setSolicitudes(new ArrayList<Solicitud>());
 		this.setMascotas(new ArrayList<Mascota>());
 	}
-	
+
 	public Veterinario(
 			String nombreUsuario,
 			String nombre,
@@ -87,6 +87,33 @@ public class Veterinario extends Persona {
 				dni,
 				telefono,
 				domicilio
+		);
+		this.setNombreClinica(nombreClinica);
+		this.setDomicilioClinica(domicilioClinica);
+		this.setValidado(validado);
+		this.setMascotas(new ArrayList<Mascota>());
+		this.setSolicitudes(new ArrayList<Solicitud>());
+	}
+
+	public Veterinario(
+			String nombre,
+			String apellido,
+			String email,
+			int dni,
+			int telefono,
+			String domicilio,
+			Usuario usuario,
+			String nombreClinica,
+			String domicilioClinica,
+			Boolean validado) {
+		super(
+				nombre,
+				apellido,
+				email,
+				dni,
+				telefono,
+				domicilio,
+				usuario
 		);
 		this.setNombreClinica(nombreClinica);
 		this.setDomicilioClinica(domicilioClinica);

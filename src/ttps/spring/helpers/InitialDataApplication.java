@@ -154,7 +154,7 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 			//Mascotas
 			Mascota m1 = new Mascota(
 					"Masc 1", today, "Pointer", "Pointer", "Masculino", "marrón",
-					"", "", d1
+					"", "", false, d1
 				);
 			m1.setVeterinario(v1);
 			try {
@@ -165,7 +165,7 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 			today = Calendar.getInstance().getTime();
 			Mascota m2 = new Mascota(
 					"Masc 2", today, "Pointer2", "Pointer2", "Masculino", "marrón",
-					"", "", d1
+					"", "", false, d1
 				);
 			try {
 				TimeUnit.MILLISECONDS.sleep(200);
@@ -175,7 +175,7 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 			today = Calendar.getInstance().getTime();
 			Mascota m3 = new Mascota(
 					"Masc 3", today, "Salchicha", "Salchicha", "Femenino", "blanca",
-					"", "", d1
+					"", "", false, d1
 				);
 			try {
 				TimeUnit.MILLISECONDS.sleep(200);
@@ -185,7 +185,7 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 			today = Calendar.getInstance().getTime();
 			Mascota m4 = new Mascota(
 					"Masc 4", today, "Salchicha2", "Salchicha2", "Femenino", "negra",
-					"", "", d1
+					"", "", false, d1
 				);
 			try
 			{

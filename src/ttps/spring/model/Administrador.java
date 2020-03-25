@@ -57,4 +57,23 @@ public class Administrador  extends Persona {
 		);
 	}
 
+	public Administrador(
+			String nombre,
+			String apellido,
+			String email,
+			int dni,
+			int telefono,
+			String domicilio,
+			Usuario usuario) {
+		super(
+				nombre,
+				apellido,
+				email,
+				dni,
+				telefono,
+				domicilio,
+				usuario
+		);
+	}
+
 }

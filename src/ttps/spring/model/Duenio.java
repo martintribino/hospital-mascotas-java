@@ -38,7 +38,7 @@ public class Duenio extends Persona {
 		super();
 		this.setMascotas(new ArrayList<Mascota>());
 	}
-	
+
 	public Duenio(PersonaReqBody p) {
 		super(
 				p.getNombreUsuario(),
@@ -52,7 +52,7 @@ public class Duenio extends Persona {
 		);
 		this.setMascotas(new ArrayList<Mascota>());
 	}
-	
+
 	public Duenio(
 			String nombreUsuario,
 			String nombre,
@@ -72,6 +72,27 @@ public class Duenio extends Persona {
 				dni,
 				telefono,
 				domicilio
+		);
+		this.setMascotas(mascotas);
+	}
+
+	public Duenio(
+			String nombre,
+			String apellido,
+			String email,
+			int dni,
+			int telefono,
+			String domicilio,
+			Usuario usuario,
+			List<Mascota> mascotas ) {
+		super(
+				nombre,
+				apellido,
+				email,
+				dni,
+				telefono,
+				domicilio,
+				usuario
 		);
 		this.setMascotas(mascotas);
 	}

@@ -15,4 +15,6 @@ public interface IMascotaDAO extends IGenericDAO<Mascota> {
 	public List<Mascota> recuperarMascotasExtraviadas();
 	public List<Mascota> recuperarMascotasPorDuenio(long id);
 	public List<Mascota> recuperarMascotasPorVeterinario(long id);
+	public List<Mascota> recuperarMascotasPorDuenioCriteria(long id, String criteria, String search);
+	public List<Mascota> recuperarMascotasPorVeterinarioCriteria(long id, String criteria, String search);
 }

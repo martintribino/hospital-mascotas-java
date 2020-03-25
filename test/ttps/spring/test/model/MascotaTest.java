@@ -33,6 +33,7 @@ public class MascotaTest {
 	            "marron",
 	            "ninguna",
 	            "",
+	            false,
 	            new Duenio(),
 	            v);
 	}

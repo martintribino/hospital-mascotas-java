@@ -50,7 +50,7 @@ public class MascotaController {
 	private DuenioService duenioServ;
 	@Autowired
 	private VeterinarioService vetServ;
-	
+
 	 //Recupero todas los mascotas
 	@GetMapping(value="/api/mascotas", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<List<Mascota>> listar() {
@@ -91,6 +91,8 @@ public class MascotaController {
 				aux.setFechaNacimiento(null);
 			if(f.getImagen())
 				aux.setImagen(mascota.getImagen());
+			if(f.getExtraviada())
+				aux.setExtraviada(mascota.getExtraviada());
 			if(mascota.getDuenio() != null && f.getDuenio())
 				aux.setDuenio(mascota.getDuenio());
 			if(mascota.getVeterinario() != null && f.getVeterinario())
@@ -130,6 +132,8 @@ public class MascotaController {
 				aux.setFechaNacimiento(null);
 			if(f.getImagen())
 				aux.setImagen(mascota.getImagen());
+			if(f.getExtraviada())
+				aux.setExtraviada(mascota.getExtraviada());
 			if(mascota.getDuenio() != null && f.getDuenio())
 				aux.setDuenio(mascota.getDuenio());
 			if(mascota.getVeterinario() != null && f.getVeterinario())
@@ -139,7 +143,7 @@ public class MascotaController {
 		return new ResponseEntity<List<Mascota>>(mascotasReturn, HttpStatus.OK);
 	}
 
-	 //Recupero todas los mascotas pero solo las propiedades publicas
+	 //Recupero los qr
 	@GetMapping(value="/mascotas/qr/", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<ImageResponse> gettQRCode(
 			@RequestParam("slg") String slug
@@ -166,7 +170,7 @@ public class MascotaController {
 	        throw e;
 		}
 	}
-	
+
 	//retorna mascotas por duenio
 	@GetMapping(value="/api/mascotas/usuario/", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<List<Mascota>> listarPorUsuario(@RequestParam("username") String userName) {
@@ -199,7 +203,44 @@ public class MascotaController {
 	        throw e;
 		}
 	}
-	
+
+	//retorna mascotas por duenio
+	@GetMapping(value="/api/mascotas/usuario/", produces={MediaType.APPLICATION_JSON_VALUE}, params= {"user","crit","srch"})
+	public ResponseEntity<List<Mascota>> listarPorUsuarioCriteria(
+			@RequestParam("user") String userName,
+			@RequestParam("crit") String criteria,
+			@RequestParam("srch") String search
+		) {
+		Usuario usu = usuService.recuperarUsuarioPorNombre(userName);
+		if(usu == null) {
+	         throw new UserNotFoundException("Usuario no válido: " + userName);
+	    }
+		Persona perfil = usu.getPersona();
+		if(perfil == null) {
+	         throw new UserNotFoundException("Perfil no encontrado." );
+	    }
+		try
+		{
+			List<Mascota> mascotas = new ArrayList<Mascota>();
+			switch (perfil.getRole()) {
+				case "administrador":
+			        throw new BadRequestException("No role." );
+				case "duenio":
+					mascotas = mascotaService.listarPorDuenioCriteria(perfil.getId(), criteria, search);
+					break;
+				case "veterinario":
+					mascotas = mascotaService.listarPorVeterinarioCriteria(perfil.getId(), criteria, search);
+					break;
+				default:
+			        throw new BadRequestException("No role." );
+			}
+			return new ResponseEntity<List<Mascota>>(mascotas, HttpStatus.OK);
+		}
+		catch (Exception e) {
+	        throw e;
+		}
+	}
+
 	//retorna una mascota por id
 	@GetMapping(value="/api/mascotas/{id}", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Mascota> encontrar(@PathVariable("id") long id) {
@@ -209,7 +250,7 @@ public class MascotaController {
 		}
 		return new ResponseEntity<Mascota>(mascota, HttpStatus.OK);
 	}
-	
+
 	//guarda una mascota para un usuario veterinario o duenio
 	@PostMapping(value="/api/mascotas", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Mascota> guardar(@Valid @RequestBody MascotaReqBody mascota) {
@@ -232,6 +273,7 @@ public class MascotaController {
 			masc.setSenias(mascota.getSenias());
 			masc.setFechaNacimiento(mascota.getFechaNacimiento());
 			masc.setImagen(mascota.getImagen());
+			masc.setExtraviada(mascota.getExtraviada());
 			masc.setDuenio(null);
 			masc.setVeterinario(null);
 			switch (perfil.getRole()) {
@@ -255,7 +297,7 @@ public class MascotaController {
 	        throw e;
 		}
 	}
-	
+
 	//actualiza una mascota
 	@PutMapping(value="/api/mascotas", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Mascota> actualizar(@Valid @RequestBody MascotaReqBody mascParam) {
@@ -272,21 +314,43 @@ public class MascotaController {
 		if (mascota == null) {
 	         throw new MascotaNotFoundException("Mascota no encontrada." );
 	    }
-		if (mascota.getDuenio() == null || mascota.getDuenio().getId() != perfil.getId()) {
-			throw new MascotaNotFoundException("Dueño incorrecto." );
+		try {
+			mascota.setNombre(mascParam.getNombre());
+			mascota.setFechaNacimiento(mascParam.getFechaNacimiento());
+			mascota.setEspecie(mascParam.getEspecie());
+			mascota.setRaza(mascParam.getRaza());
+			mascota.setSexo(mascParam.getSexo());
+			mascota.setColor(mascParam.getColor());
+			mascota.setSenias(mascParam.getSenias());
+			mascota.setExtraviada(mascParam.getExtraviada());
+			// La imagen se actualiza por separado
+			// con un endpoint aparte
+			//mascota.setImagen(mascParam.getImagen());
+			switch (perfil.getRole()) {
+				case "administrador":
+			        throw new BadRequestException("No role." );
+				case "duenio":
+					if (mascota.getDuenio() == null || mascota.getDuenio().getId() != perfil.getId()) {
+						throw new MascotaNotFoundException("Dueño incorrecto." );
+					}
+					mascotaService.actualizar(mascota);
+					return new ResponseEntity<Mascota>(mascota, HttpStatus.OK);
+				case "veterinario":
+					if (mascota.getVeterinario() == null || mascota.getVeterinario().getId() != perfil.getId()) {
+						throw new MascotaNotFoundException("Veterinario incorrecto." );
+					}
+					mascotaService.actualizar(mascota);
+					return new ResponseEntity<Mascota>(mascota, HttpStatus.OK);
+				default:
+			        throw new BadRequestException("No role." );
+			}
 		}
-		mascota.setNombre(mascParam.getNombre());
-		mascota.setFechaNacimiento(mascParam.getFechaNacimiento());
-		mascota.setEspecie(mascParam.getEspecie());
-		mascota.setRaza(mascParam.getRaza());
-		mascota.setSexo(mascParam.getSexo());
-		mascota.setColor(mascParam.getColor());
-		mascota.setSenias(mascParam.getSenias());
-		mascota.setImagen(mascParam.getImagen());
-		Mascota mascotaUpdated = mascotaService.actualizar(mascota);
-		return new ResponseEntity<Mascota>(mascotaUpdated, HttpStatus.OK);
+		catch (Exception e)
+		{
+			throw e;
+		}
 	}
-	
+
 	//borra una mascota
 	@DeleteMapping(value="/api/mascotas", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Mascota> eliminar(

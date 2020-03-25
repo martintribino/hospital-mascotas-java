@@ -33,6 +33,7 @@ public class MascotaReqBody {
     @Past(message = "Por favor proporcione una fecha de nacimiento válida")
 	private Date fechaNacimiento;
 	private String imagen;
+	private Boolean extraviada;
 	private String username;
 
 	public MascotaReqBody() {
@@ -113,6 +114,14 @@ public class MascotaReqBody {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public Boolean getExtraviada() {
+		return extraviada;
+	}
+
+	public void setExtraviada(Boolean extraviada) {
+		this.extraviada = extraviada;
 	}
 
 }

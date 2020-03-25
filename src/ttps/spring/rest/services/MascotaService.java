@@ -1,11 +1,13 @@
 package ttps.spring.rest.services;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ttps.spring.dao.IMascotaDAO;
+import ttps.spring.exceptions.BadRequestException;
 import ttps.spring.model.Mascota;
 import ttps.spring.model.Veterinario;
 
@@ -73,14 +75,40 @@ public class MascotaService {
 	        return mascotaRepository.recuperarMascotas();
     }
 
-	//retorna una lista de mascotas por dueno 
+	//retorna una lista de mascotas por dueno
 	public List<Mascota> listarPorDuenio(long id) {
         return mascotaRepository.recuperarMascotasPorDuenio(id);
     }
 
-	//retorna una lista de mascotas por dueno 
+	//retorna una lista de mascotas por veterinario
 	public List<Mascota> listarPorVeterinario(long id) {
         return mascotaRepository.recuperarMascotasPorVeterinario(id);
+    }
+
+	//retorna una lista de mascotas por dueno y criterio
+	public List<Mascota> listarPorDuenioCriteria(long id, String criteria, String search) {
+		try
+		{
+			Field field = Mascota.class.getDeclaredField(criteria);
+			return mascotaRepository.recuperarMascotasPorDuenioCriteria(id, field.getName(), search);
+		}
+		catch (Exception e)
+		{
+	        throw new BadRequestException("Invalid criteria." );
+		}
+    }
+
+	//retorna una lista de mascotas por veterinario y criterio
+	public List<Mascota> listarPorVeterinarioCriteria(long id, String criteria, String search) {
+		try
+		{
+			Field field = Mascota.class.getField(criteria);
+			return mascotaRepository.recuperarMascotasPorVeterinarioCriteria(id, field.getName(), search);
+		}
+		catch (Exception e)
+		{
+	        throw new BadRequestException("Invalid criteria." );
+		}
     }
 
 }

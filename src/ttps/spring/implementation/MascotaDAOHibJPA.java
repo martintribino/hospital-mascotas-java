@@ -93,4 +93,39 @@ public class MascotaDAOHibJPA extends GenericDAOHibJPA<Mascota>
 		consulta.executeUpdate();
 	}
 
+	@Override
+	public List<Mascota> recuperarMascotasPorDuenioCriteria(long id, String criteria, String search) {
+		TypedQuery<Mascota> consulta;
+		if(criteria == "extraviada") {
+			consulta = this.getEntityManager()
+					.createQuery("SELECT m from Mascota m WHERE m.duenio.id = :idDue and  m.extraviada = 1", Mascota.class);
+			consulta.setParameter("idDue", id);
+		}else {
+			String strQuery = String.format("SELECT m from Mascota m WHERE m.duenio.id = :idDue and m.%s LIKE :search",
+					criteria);
+			consulta = this.getEntityManager()
+					.createQuery(strQuery, Mascota.class);
+			consulta.setParameter("idDue", id);
+			consulta.setParameter("search", "%"+search+"%");
+		}
+		return (List<Mascota>) consulta.getResultList();
+	}
+
+	@Override
+	public List<Mascota> recuperarMascotasPorVeterinarioCriteria(long id, String criteria, String search) {
+		TypedQuery<Mascota> consulta;
+		if(criteria == "extraviada") {
+			consulta = this.getEntityManager()
+					.createQuery("SELECT m from Mascota m WHERE  m.duenio.id = :idVet and  m.extraviada = 1", Mascota.class);
+			consulta.setParameter("idVet", id);
+		}else {
+			consulta = this.getEntityManager()
+					.createQuery("SELECT m from Mascota m WHERE  m.duenio.id = :idVet and :crit LIKE %:search%", Mascota.class);
+			consulta.setParameter("idVet", id);
+			consulta.setParameter("crit", criteria);
+			consulta.setParameter("search", search);
+		}
+		return (List<Mascota>) consulta.getResultList();
+	}
+
 }

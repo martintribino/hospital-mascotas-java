@@ -91,8 +91,8 @@ public class UsuarioController {
 		if(usuario == null) {
 	         throw new UserNotFoundException("Usuario no válido : " + usu.getNombreUsuario());
 	    }
-		if(!usuario.getClave().isEmpty()) {
-			//se queda con la que tiene
+		if(!usu.getClave().isEmpty()) {
+			//cambio de clave
 			if(usuario.getClave().equals(usu.getClave())) {
 		         throw new UserInvalidKeyException("La clave actual debe ser distinta a la anterior.");
 			}
@@ -105,7 +105,7 @@ public class UsuarioController {
 		{
 			if (usuario.getNombreUsuario() != usu.getNombreUsuario())
 				usuario.setNombreUsuario(usu.getNombreUsuario());
-			if(!usuario.getClave().isEmpty()) {
+			if(!usu.getClave().isEmpty()) {
 				String pass = Encrypt.encode(usu.getClave());
 				usuario.setClave(pass);
 			}

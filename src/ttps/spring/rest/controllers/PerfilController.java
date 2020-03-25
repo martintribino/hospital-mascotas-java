@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -108,37 +107,34 @@ public class PerfilController {
 			switch (perfil.getRole()) {
 				case "administrador":
 					Administrador a = new Administrador(
-							perfil.getUsuario().getNombreUsuario(),
 							perfReq.getNombre(),
 							perfReq.getApellido(),
-							perfil.getUsuario().getClave(),
-							perfReq.getEmail(),
-							perfReq.getDni(),
-							perfReq.getTelefono(),
-							perfReq.getDomicilio());
-					return adminCont.actualizar(perfil.getId(), a);
-				case "duenio":
-					Duenio d = new Duenio(
-							perfil.getUsuario().getNombreUsuario(),
-							perfReq.getNombre(),
-							perfReq.getApellido(),
-							perfil.getUsuario().getClave(),
 							perfReq.getEmail(),
 							perfReq.getDni(),
 							perfReq.getTelefono(),
 							perfReq.getDomicilio(),
+							usu);
+					return adminCont.actualizar(perfil.getId(), a);
+				case "duenio":
+					Duenio d = new Duenio(
+							perfReq.getNombre(),
+							perfReq.getApellido(),
+							perfReq.getEmail(),
+							perfReq.getDni(),
+							perfReq.getTelefono(),
+							perfReq.getDomicilio(),
+							usu,
 							new ArrayList<Mascota>());
 					return duenioCont.actualizar(perfil.getId(), d);
 				case "veterinario":
 					Veterinario v = new Veterinario(
-							perfil.getUsuario().getNombreUsuario(),
 							perfReq.getNombre(),
 							perfReq.getApellido(),
-							perfil.getUsuario().getClave(),
 							perfReq.getEmail(),
 							perfReq.getDni(),
 							perfReq.getTelefono(),
 							perfReq.getDomicilio(),
+							usu,
 							perfReq.getNombreClinica(),
 							perfReq.getDomicilioClinica(),
 							perfReq.getValidado());
@@ -159,7 +155,8 @@ public class PerfilController {
 	
 	//borra un perfil
 	//solo se permite para un usuario administrador
-	@DeleteMapping(value="/api/usuario/profile", produces={MediaType.APPLICATION_JSON_VALUE})
+	//no se permite por el momento
+	//@DeleteMapping(value="/api/usuario/profile", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Persona> eliminar(
 			@RequestParam("username") String userName,
 			@RequestParam("owner") String owner

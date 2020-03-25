@@ -65,17 +65,13 @@ public class DuenioController {
 		if (duenio == null) {
 			return new ResponseEntity<Duenio>(HttpStatus.NOT_FOUND);
 		}
+		//solo se actualizan los datos de perfil
 		duenio.setNombre(d.getNombre());
 		duenio.setApellido(d.getApellido());
 		duenio.setEmail(d.getEmail());
 		duenio.setDni(d.getDni());
 		duenio.setTelefono(d.getTelefono());
 		duenio.setDomicilio(d.getDomicilio());
-		Usuario usuario = new Usuario();
-		usuario.setNombreUsuario(d.getUsuario().getNombreUsuario());
-		String pass = Encrypt.encode(d.getUsuario().getClave());
-		usuario.setClave(pass);
-		duenio.setUsuario(usuario);
 		Duenio duenioUpdated = (Duenio) duenioService.actualizar(duenio);
 		return new ResponseEntity<Duenio>(duenioUpdated, HttpStatus.OK);
 	}
