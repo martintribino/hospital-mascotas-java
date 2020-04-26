@@ -340,7 +340,7 @@ public class InitialDataApplication implements ApplicationListener<ContextRefres
 				inicio = LocalTime.of(11, 30);
 				fin = LocalTime.of(11, 59);
 				Visita visita = new Visita(
-						fechaAyer, inicio, fin, "Visita nro 1", m1, "groga", "peso", "motivo", "diag", "ind"
+						fechaAyer, inicio, fin, "Visita nro 1", m1, "peso", "motivo", "diag", "ind"
 					);
 				if (visita != null && visita.getTurno() != null )
 					visita.getTurno().setEstado(Turno.Estados.CANCELADO);

@@ -37,7 +37,6 @@ public class Visita extends Evento {
 			LocalTime fin,
 			String descripcion,
 			Mascota mascota,
-			String droga,
 			String peso,
 			String motivo,
 			String diagnostico,

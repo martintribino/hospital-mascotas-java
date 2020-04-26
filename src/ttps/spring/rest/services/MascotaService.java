@@ -89,6 +89,8 @@ public class MascotaService {
 	public List<Mascota> listarPorDuenioCriteria(long id, String criteria, String search) {
 		try
 		{
+			if(criteria.contentEquals("todas"))
+				return this.listarPorDuenio(id);
 			Field field = Mascota.class.getDeclaredField(criteria);
 			return mascotaRepository.recuperarMascotasPorDuenioCriteria(id, field.getName(), search);
 		}
@@ -102,7 +104,9 @@ public class MascotaService {
 	public List<Mascota> listarPorVeterinarioCriteria(long id, String criteria, String search) {
 		try
 		{
-			Field field = Mascota.class.getField(criteria);
+			if(criteria.contentEquals("todas"))
+				return this.listarPorVeterinario(id);
+			Field field = Mascota.class.getDeclaredField(criteria);
 			return mascotaRepository.recuperarMascotasPorVeterinarioCriteria(id, field.getName(), search);
 		}
 		catch (Exception e)

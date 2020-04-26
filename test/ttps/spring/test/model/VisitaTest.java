@@ -22,7 +22,6 @@ public class VisitaTest {
 				fin,
 				"Vacuna",
 				null,
-				"droga",
 				"peso",
 				"motivo",
 				"diagnostico",

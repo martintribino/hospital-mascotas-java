@@ -22,14 +22,28 @@ import ttps.spring.exceptions.EventoNotFound;
 import ttps.spring.exceptions.MascotaNotFoundException;
 import ttps.spring.exceptions.TurnoNoValidoException;
 import ttps.spring.exceptions.UserNotFoundException;
+import ttps.spring.model.Desparasitacion;
 import ttps.spring.model.Duenio;
+import ttps.spring.model.Enfermedad;
 import ttps.spring.model.Evento;
+import ttps.spring.model.Intervencion;
 import ttps.spring.model.Mascota;
 import ttps.spring.model.Persona;
+import ttps.spring.model.Recordatorio;
+import ttps.spring.model.Reproduccion;
 import ttps.spring.model.Turno;
 import ttps.spring.model.Usuario;
+import ttps.spring.model.Vacuna;
 import ttps.spring.model.Veterinario;
-import ttps.spring.requests.EventoRequBody;
+import ttps.spring.model.Visita;
+import ttps.spring.requests.DesparasitacionReqBody;
+import ttps.spring.requests.EnfermedadReqBody;
+import ttps.spring.requests.EventoReqBody;
+import ttps.spring.requests.IntervencionReqBody;
+import ttps.spring.requests.RecordatorioReqBody;
+import ttps.spring.requests.ReproduccionReqBody;
+import ttps.spring.requests.VacunaReqBody;
+import ttps.spring.requests.VisitaReqBody;
 import ttps.spring.responses.HorariosResponse;
 import ttps.spring.rest.services.DuenioService;
 import ttps.spring.rest.services.EventoService;
@@ -124,10 +138,124 @@ public class EventoController {
 		}
 	}
 
-	//guarda una Solicitud de una mascota de un duenio para un veterinario
-	@PostMapping
+	//guarda un evento de Visita de una mascota de un duenio para un veterinario
+	@PostMapping(headers = {"evento="+Visita.TIPO})
 	public ResponseEntity<Evento> guardar(
-			@Valid @RequestBody EventoRequBody ev
+			@Valid @RequestBody VisitaReqBody visita
+			) {
+		Evento e = new Visita(
+				visita.getFecha(),
+				visita.getInicio(),
+				visita.getFin(),
+				visita.getEvento().getDescripcion(),
+				visita.getEvento().getMascota(),
+				visita.getEvento().getPeso(),
+				visita.getEvento().getMotivo(),
+				visita.getEvento().getDiagnostico(),
+				visita.getEvento().getIndicaciones()
+				);
+		return this.guardarEvento(visita, e);
+	}
+
+	//guarda un evento de Vacuna de una mascota de un duenio para un veterinario
+	@PostMapping(headers = {"evento="+Vacuna.TIPO})
+	public ResponseEntity<Evento> guardar(
+			@Valid @RequestBody VacunaReqBody vacuna
+			) {
+		Evento e = new Vacuna(
+				vacuna.getFecha(),
+				vacuna.getInicio(),
+				vacuna.getFin(),
+				vacuna.getEvento().getDescripcion(),
+				vacuna.getEvento().getMascota()
+				);
+		return this.guardarEvento(vacuna, e);
+	}
+
+	//guarda un evento reproduccion de una mascota de un duenio para un veterinario
+	@PostMapping(headers = {"evento="+Reproduccion.TIPO})
+	public ResponseEntity<Evento> guardar(
+			@Valid @RequestBody ReproduccionReqBody rep
+			) {
+		Evento e = new Reproduccion(
+				rep.getFecha(),
+				rep.getInicio(),
+				rep.getFin(),
+				rep.getEvento().getDescripcion(),
+				rep.getEvento().getMascota(),
+				rep.getEvento().getFechaParto(),
+				rep.getEvento().getNroCachorros()
+				);
+		return this.guardarEvento(rep, e);
+	}
+
+	//guarda un evento recordatorio de una mascota de un duenio para un veterinario
+	@PostMapping(headers = {"evento="+Recordatorio.TIPO})
+	public ResponseEntity<Evento> guardar(
+			@Valid @RequestBody RecordatorioReqBody rec
+			) {
+		Evento e = new Recordatorio(
+				rec.getFecha(),
+				rec.getInicio(),
+				rec.getFin(),
+				rec.getEvento().getDescripcion(),
+				rec.getEvento().getMascota()
+				);
+		return this.guardarEvento(rec, e);
+	}
+
+	//guarda un evento intervencion de una mascota de un duenio para un veterinario
+	@PostMapping(headers = {"evento="+Intervencion.TIPO})
+	public ResponseEntity<Evento> guardar(
+			@Valid @RequestBody IntervencionReqBody intervencion
+			) {
+		Evento e = new Intervencion(
+				intervencion.getFecha(),
+				intervencion.getInicio(),
+				intervencion.getFin(),
+				intervencion.getEvento().getDescripcion(),
+				intervencion.getEvento().getMascota()
+				);
+		return this.guardarEvento(intervencion, e);
+	}
+
+	//guarda un evento enfermedad de una mascota de un duenio para un veterinario
+	@PostMapping(headers = {"evento="+Enfermedad.TIPO})
+	public ResponseEntity<Evento> guardar(
+			@Valid @RequestBody EnfermedadReqBody enfermedad
+			) {
+		Evento e = new Enfermedad(
+				enfermedad.getFecha(),
+				enfermedad.getInicio(),
+				enfermedad.getFin(),
+				enfermedad.getEvento().getDescripcion(),
+				enfermedad.getEvento().getMascota()
+				);
+		return this.guardarEvento(enfermedad, e);
+	}
+
+	//guarda un evento desparasitacion de una mascota de un duenio para un veterinario
+	@PostMapping(headers = {"evento="+Desparasitacion.TIPO})
+	public ResponseEntity<Evento> guardar(
+			@Valid @RequestBody DesparasitacionReqBody desparasitacion
+			) {
+		Evento e = new Desparasitacion(
+				desparasitacion.getFecha(),
+				desparasitacion.getInicio(),
+				desparasitacion.getFin(),
+				desparasitacion.getEvento().getDescripcion(),
+				desparasitacion.getEvento().getMascota(),
+				desparasitacion.getEvento().getDroga(),
+				desparasitacion.getEvento().getResultado()
+				);
+		return this.guardarEvento(desparasitacion, e);
+	}
+
+	//guarda una Solicitud de una mascota de un duenio para un veterinario
+	//@PostMapping
+	public ResponseEntity<Evento> guardarEvento(
+			EventoReqBody ev,
+			Evento e
 			) {
 		Usuario usu = usuService.recuperarUsuarioPorNombre(ev.getUsername());
 		if(usu == null) {
@@ -141,7 +269,6 @@ public class EventoController {
 		if(masc == null) {
 	         throw new MascotaNotFoundException("Mascota no encontrada." );
 	    }
-		Evento e = ev.getEvento();
 		if(e == null) {
 	         throw new BadRequestException("Evento no válido." );
 	    }
@@ -174,7 +301,6 @@ public class EventoController {
 					if(masc.getVeterinario().getId() != perfil.getId()) {
 				         throw new BadRequestException("Mascota no tiene este veterinario." );
 				    }
-					e.getTurno().setEstado(ev.getEvento().getTurno().getEstado());
 					evento = eventoService.guardar(e);
 					return new ResponseEntity<Evento>(evento, HttpStatus.OK);
 				default:

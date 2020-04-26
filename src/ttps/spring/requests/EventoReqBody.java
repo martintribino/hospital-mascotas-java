@@ -14,9 +14,8 @@ import ttps.spring.helpers.LocalDateToStringConverter;
 import ttps.spring.helpers.LocalTimeToStringConverter;
 import ttps.spring.helpers.StringToLocalDateConverter;
 import ttps.spring.helpers.StringToLocalTimeConverter;
-import ttps.spring.model.Evento;
 
-public class EventoRequBody {
+public class EventoReqBody {
 
     @JsonSerialize(converter = LocalDateToStringConverter.class)
     @JsonDeserialize(converter = StringToLocalDateConverter.class)
@@ -33,9 +32,8 @@ public class EventoRequBody {
     @Size(min = 4, max = 50, message = "nombre debe tener entre 4 y 50 caracteres")
 	private String username;
 	private String slug;
-	private Evento evento;
 
-	public EventoRequBody() {}
+	public EventoReqBody() {}
 
 	public String getSlug() {
 		return slug;
@@ -43,14 +41,6 @@ public class EventoRequBody {
 
 	public void setSlug(String slug) {
 		this.slug = slug;
-	}
-
-	public Evento getEvento() {
-		return evento;
-	}
-
-	public void setEvento(Evento evento) {
-		this.evento = evento;
 	}
 
 	public LocalDate getFecha() {
